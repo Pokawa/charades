@@ -4,6 +4,8 @@ compiler:
   - gcc
 
 before_script:
+  # dependencies
+  - sudo apt-get -y install libfmt-dev libspdlog-dev
   # create a build folder for the out-of-source build
   - mkdir build
   # switch to build directory
