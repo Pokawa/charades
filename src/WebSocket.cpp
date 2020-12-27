@@ -3,6 +3,7 @@
 //
 
 #include <arpa/inet.h>
+#include <unistd.h>
 #include "WebSocket.h"
 
 chs::WebSocket::WebSocket(int fd, sockaddr_in sockInfo)  : descriptor(fd), sockInfo(sockInfo) {}
@@ -18,3 +19,13 @@ uint16_t chs::WebSocket::getPort() const {
 int chs::WebSocket::getDescriptor() const {
     return descriptor;
 }
+
+void chs::WebSocket::close() const {
+    ::close(descriptor);
+}
+
+chs::WebSocket::~WebSocket() {
+    close();
+}
+
+
