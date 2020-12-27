@@ -15,6 +15,7 @@ private:
     std::string port;
     int serverSocket;
     std::vector<chs::WebSocket> clientsSockets;
+    std::vector<chs::WebSocket*> notLogged;
 
 public:
     explicit ConnectionHandler(std::string port);

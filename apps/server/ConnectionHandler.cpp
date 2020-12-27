@@ -23,6 +23,8 @@ bool ConnectionHandler::acceptClient() {
         return false;
     } else {
         clientsSockets.emplace_back(clientFd, clientAddr);
+        notLogged.emplace_back(&clientsSockets.back());
+
         spdlog::info("New client connected from {} on {}", clientsSockets.back().getAddress(), clientsSockets.back().getPort());
         return true;
     }
