@@ -16,7 +16,6 @@ private:
     std::string port;
     int serverSocket;
     std::vector<chs::WebSocket> clientsSockets;
-    std::vector<chs::WebSocket*> notLogged;
     std::vector<pollfd> pollSockets;
 
 public:
@@ -28,6 +27,7 @@ public:
 private:
     static void setSocketToNonBlock(int socket);
     void addToPoll(int socket, short events);
+    void removeFromPoll(int socket);
 };
 
 

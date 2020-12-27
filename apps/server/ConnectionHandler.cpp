@@ -74,5 +74,11 @@ void ConnectionHandler::addToPoll(int socket, short events) {
     pollSockets.push_back({.fd = socket, .events = events});
 }
 
+void ConnectionHandler::removeFromPoll(int socket) {
+    auto pos = std::find_if(pollSockets.begin(), pollSockets.end(), [&socket](const pollfd & sock){ return sock.fd == socket; });
+    if (pos != pollSockets.end())
+        pollSockets.erase(pos);
+}
+
 
 
