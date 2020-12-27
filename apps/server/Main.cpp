@@ -11,6 +11,16 @@ int main(int argc, char** argv){
         return 1;
     }
 
-    ConnectionHandler server{argv[1]};
-    server.acceptClient();
+    ConnectionHandler connectionHandler{argv[1]};
+
+    while(true) {
+        auto pollSockets = connectionHandler.getPollSockets();
+        poll(pollSockets.data(), pollSockets.size(), -1);
+
+        if (pollSockets[0].revents & POLLIN) {
+            connectionHandler.acceptClient();
+        }
+
+
+    }
 }

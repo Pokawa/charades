@@ -8,6 +8,7 @@
 
 #include <string>
 #include <vector>
+#include <poll.h>
 #include "WebSocket.hpp"
 
 class ConnectionHandler {
@@ -16,14 +17,17 @@ private:
     int serverSocket;
     std::vector<chs::WebSocket> clientsSockets;
     std::vector<chs::WebSocket*> notLogged;
+    std::vector<pollfd> pollSockets;
 
 public:
     explicit ConnectionHandler(std::string port);
     void openServer();
     bool acceptClient();
+    std::vector<pollfd> getPollSockets();
 
 private:
-
+    static void setSocketToNonBlock(int socket);
+    void addToPoll(int socket, short events);
 };
 
 

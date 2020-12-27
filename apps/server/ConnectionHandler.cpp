@@ -7,6 +7,7 @@
 #include <fmt/format.h>
 #include <arpa/inet.h>
 #include <utility>
+#include <fcntl.h>
 #include "ConnectionHandler.hpp"
 
 ConnectionHandler::ConnectionHandler(std::string port) : port(std::move(port)), serverSocket(0){
@@ -19,11 +20,11 @@ bool ConnectionHandler::acceptClient() {
     auto clientFd = accept(serverSocket, (sockaddr *)&clientAddr, &clientAddrSize);
 
     if (clientFd == -1) {
-        spdlog::error("Client acceptance failed");
+        spdlog::error("Client acceptance failed {}", strerror(errno));
         return false;
     } else {
         clientsSockets.emplace_back(clientFd, clientAddr);
-        notLogged.emplace_back(&clientsSockets.back());
+        addToPoll(clientsSockets.back().getDescriptor(), POLLIN);
 
         spdlog::info("New client connected from {} on {}", clientsSockets.back().getAddress(), clientsSockets.back().getPort());
         return true;
@@ -40,6 +41,8 @@ void ConnectionHandler::openServer() {
     }
 
     serverSocket = socket(resolved->ai_family, resolved->ai_socktype, resolved->ai_protocol);
+    setSocketToNonBlock(serverSocket);
+
     const int one = 1;
     if (setsockopt(serverSocket, SOL_SOCKET, SO_REUSEADDR, &one, sizeof(one))) {
         spdlog::critical("Failed setting socket to address reuse: {}", strerror(errno));
@@ -52,7 +55,24 @@ void ConnectionHandler::openServer() {
     }
 
     freeaddrinfo(resolved);
-    listen(this->serverSocket, 10);
+    listen(serverSocket, 10);
+    addToPoll(serverSocket, POLLIN);
 
     spdlog::info("Successfully started server on port {}", this->port);
 }
+
+std::vector<pollfd> ConnectionHandler::getPollSockets() {
+    return pollSockets;
+}
+
+void ConnectionHandler::setSocketToNonBlock(int socket) {
+    auto flags = fcntl(socket, F_GETFL);
+    fcntl(socket, F_SETFL, flags | O_NONBLOCK);
+}
+
+void ConnectionHandler::addToPoll(int socket, short events) {
+    pollSockets.push_back({.fd = socket, .events = events});
+}
+
+
+
