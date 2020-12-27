@@ -8,7 +8,7 @@
 
 #include <string>
 #include <vector>
-#include "WebSocket.h"
+#include "WebSocket.hpp"
 
 class ConnectionHandler {
 private:
