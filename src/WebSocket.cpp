@@ -4,7 +4,7 @@
 
 #include <arpa/inet.h>
 #include <unistd.h>
-#include "WebSocket.h"
+#include "WebSocket.hpp"
 
 chs::WebSocket::WebSocket(int fd, sockaddr_in sockInfo)  : descriptor(fd), sockInfo(sockInfo) {}
 

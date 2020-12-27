@@ -8,7 +8,7 @@
 
 #include <resolv.h>
 #include <string>
-#include "WebSocket.h"
+#include "WebSocket.hpp"
 
 namespace chs {
 
