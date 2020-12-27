@@ -2,7 +2,7 @@
 // Created by hubert on 26.12.2020.
 //
 #include <spdlog/spdlog.h>
-#include "Server.hpp"
+#include "ConnectionHandler.hpp"
 
 
 int main(int argc, char** argv){
@@ -11,12 +11,6 @@ int main(int argc, char** argv){
         return 1;
     }
 
-    Server server{argv[1]};
-    try {
-        server.openServer();
-    } catch (Server::ServerExeption& exception) {
-        spdlog::critical(exception.what());
-        exit(1);
-    }
+    ConnectionHandler server{argv[1]};
     server.acceptClient();
 }

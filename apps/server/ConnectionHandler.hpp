@@ -7,18 +7,17 @@
 #pragma once
 
 #include <string>
-#include <unordered_set>
+#include <vector>
+#include "WebSocket.h"
 
-class Server {
+class ConnectionHandler {
 private:
     std::string port;
-    int serverSocket{};
-    std::unordered_set<int> clientsSockets;
+    int serverSocket;
+    std::vector<chs::WebSocket> clientsSockets;
 
 public:
-    using ServerExeption = std::logic_error;
-
-    explicit Server(std::string port);
+    explicit ConnectionHandler(std::string port);
     void openServer();
     bool acceptClient();
 
