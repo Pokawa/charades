@@ -21,5 +21,6 @@ public:
     void receiveFrom(const chs::WebSocket & socket);
     void sendTo(const chs::WebSocket & socket);
     void putMessage(const chs::WebSocket & socket, const chs::Message & message);
+    bool isMessageToGet(const chs::WebSocket & socket);
     chs::Message getMessage(const chs::WebSocket & socket);
 };

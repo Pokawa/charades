@@ -30,4 +30,8 @@ chs::Message IOHandler::getMessage(const chs::WebSocket &socket) {
     return incomingQueues.at(socket.getDescriptor()).getMessage();
 }
 
+bool IOHandler::isMessageToGet(const chs::WebSocket &socket) {
+    return incomingQueues.at(socket.getDescriptor()).isNotEmpty();
+}
+
 
