@@ -23,6 +23,7 @@ public:
     void openServer();
     bool acceptClient();
     const chs::WebSocket& getLastClient();
+    const chs::WebSocket& getWebSocket(const int &socket);
     const std::vector<pollfd> & getPollSockets();
 
 private:

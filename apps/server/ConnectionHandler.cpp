@@ -75,13 +75,20 @@ void ConnectionHandler::addToPoll(int socket, short events) {
 }
 
 void ConnectionHandler::removeFromPoll(int socket) {
-    auto pos = std::find_if(pollSockets.begin(), pollSockets.end(), [&socket](const pollfd & sock){ return sock.fd == socket; });
+    auto pos = std::find_if(pollSockets.begin(), pollSockets.end(),
+                            [&socket](const pollfd & sock){ return sock.fd == socket; });
     if (pos != pollSockets.end())
         pollSockets.erase(pos);
 }
 
 const chs::WebSocket& ConnectionHandler::getLastClient() {
     return clientsSockets.back();
+}
+
+const chs::WebSocket &ConnectionHandler::getWebSocket(const int &socket) {
+    auto position = std::find_if(clientsSockets.begin(), clientsSockets.end(),
+                                 [&socket](const chs::WebSocket & sock){ return sock.getDescriptor() == socket; });
+    return *position;
 }
 
 
