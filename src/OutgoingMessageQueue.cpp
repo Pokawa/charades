@@ -3,7 +3,6 @@
 //
 
 #include "OutgoingMessageQueue.hpp"
-#include <sys/ioctl.h>
 #include <netdb.h>
 
 chs::OutgoingMessageQueue::OutgoingMessageQueue(int socket) : socket(socket), sending(false), sentOffset(0){
