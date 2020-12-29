@@ -13,6 +13,7 @@ int main(int argc, char** argv){
     }
 
     ConnectionHandler connectionHandler{argv[1]};
+    IOHandler ioHandler;
 
     while(true) {
         auto pollSockets = connectionHandler.getPollSockets();
@@ -20,9 +21,20 @@ int main(int argc, char** argv){
 
         if (pollSockets[0].revents & POLLIN) {
             if (connectionHandler.acceptClient());
-
+                ioHandler.addClient(connectionHandler.getLastClient());
         }
 
+        for (int i = 1; i < pollSockets.size(); ++i) {
+            if (pollSockets[i].revents & POLLIN) {
+                auto client = connectionHandler.getWebSocket(pollSockets[i].fd);
+                ioHandler.receiveFrom(client);
 
+                if (ioHandler.isMessageToGet(client)) {
+                    auto message = ioHandler.getMessage(client);
+                    spdlog::info("Received message from {} : \"{}\"", client.getAddress(), message);
+                }
+            }
+        }
     }
+    return 0;
 }
