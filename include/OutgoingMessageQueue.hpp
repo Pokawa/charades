@@ -6,18 +6,19 @@
 
 #include <queue>
 #include "IncomingMessage.hpp"
+#include "WebSocket.hpp"
 
 namespace chs {
     class OutgoingMessageQueue {
     private:
         std::queue<chs::Message> queue;
-        int socket;
+        const chs::WebSocket & socket;
         chs::Message currentMessage;
         bool sending;
         int sentOffset;
 
     public:
-        explicit OutgoingMessageQueue(int socket);
+        explicit OutgoingMessageQueue(const chs::WebSocket & socket);
         void sendMessages();
         void putMessage(chs::Message);
 

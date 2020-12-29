@@ -6,17 +6,18 @@
 
 #include <queue>
 #include "IncomingMessage.hpp"
+#include "WebSocket.hpp"
 
 namespace chs{
     class IncomingMessageQueue {
     private:
         std::queue<chs::Message> queue;
         int messageSize;
-        int socket;
+        const chs::WebSocket & socket;
         bool reading;
 
     public:
-        explicit IncomingMessageQueue(int socket);
+        explicit IncomingMessageQueue(const chs::WebSocket & socket);
         void readMessages();
         chs::Message getMessage();
 

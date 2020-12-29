@@ -5,7 +5,7 @@
 #include "OutgoingMessageQueue.hpp"
 #include <netdb.h>
 
-chs::OutgoingMessageQueue::OutgoingMessageQueue(int socket) : socket(socket), sending(false), sentOffset(0){
+chs::OutgoingMessageQueue::OutgoingMessageQueue(const chs::WebSocket & socket) : socket(socket), sending(false), sentOffset(0){
 }
 
 void chs::OutgoingMessageQueue::putMessage(chs::Message message) {
@@ -20,14 +20,14 @@ void chs::OutgoingMessageQueue::sendMessages() {
         sentOffset = 0;
 
         auto messageSize = currentMessage.size();
-        send(socket, &messageSize, sizeof(messageSize), 0);
+        send(socket.getDescriptor(), &messageSize, sizeof(messageSize), 0);
         //TODO error handling
     }
 
     if (sending) {
         auto startingAddress = currentMessage.data() + sentOffset;
         auto remainingLength = currentMessage.size() - sentOffset;
-        auto sentBytes = send(socket,  startingAddress, remainingLength, 0);
+        auto sentBytes = send(socket.getDescriptor(),  startingAddress, remainingLength, 0);
         //TODO error handling
         sentOffset += sentBytes;
 
