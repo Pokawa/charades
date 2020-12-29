@@ -24,6 +24,9 @@ namespace chs {
         [[nodiscard]] int getDescriptor() const;
         void close() const;
 
+        bool operator==(const WebSocket &rhs) const;
+        bool operator!=(const WebSocket &rhs) const;
+
         ~WebSocket();
     };
 
