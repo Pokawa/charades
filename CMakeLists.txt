@@ -8,3 +8,4 @@ find_package(fmt)
 
 add_subdirectory(src)
 add_subdirectory(apps/server)
+add_subdirectory(apps/client)
