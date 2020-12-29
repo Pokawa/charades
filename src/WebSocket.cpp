@@ -28,12 +28,4 @@ chs::WebSocket::~WebSocket() {
     close();
 }
 
-bool chs::WebSocket::operator==(const chs::WebSocket &rhs) const {
-    return descriptor == rhs.descriptor;
-}
-
-bool chs::WebSocket::operator!=(const chs::WebSocket &rhs) const {
-    return !(rhs == *this);
-}
-
 
