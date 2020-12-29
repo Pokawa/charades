@@ -2,7 +2,7 @@
 // Created by hubert on 29.12.2020.
 //
 
-#include "IoHandler.hpp"
+#include "IOHandler.hpp"
 
 void IOHandler::addClient(const chs::WebSocket &socket) {
     incomingQueues.emplace(socket.getDescriptor(), socket);

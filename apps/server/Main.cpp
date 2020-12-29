@@ -3,6 +3,7 @@
 //
 #include <spdlog/spdlog.h>
 #include "ConnectionHandler.hpp"
+#include "IOHandler.hpp"
 
 
 int main(int argc, char** argv){
@@ -18,7 +19,8 @@ int main(int argc, char** argv){
         poll(pollSockets.data(), pollSockets.size(), -1);
 
         if (pollSockets[0].revents & POLLIN) {
-            connectionHandler.acceptClient();
+            if (connectionHandler.acceptClient());
+
         }
 
 
