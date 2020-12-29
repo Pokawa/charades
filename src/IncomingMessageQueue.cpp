@@ -10,14 +10,14 @@ chs::IncomingMessageQueue::IncomingMessageQueue(const chs::WebSocket & socket) :
 }
 
 void chs::IncomingMessageQueue::readMessages() {
-    if (getBufferSize() >= 4 and not reading) {
+    if (getBufferSize() >= sizeof(std::size_t) and not reading) {
         reading = true;
         recv(socket.getDescriptor(), &messageSize, sizeof(messageSize), 0);
     }
 
     if (getBufferSize() >= messageSize and reading) {
         chs::IncomingMessage message(messageSize, 0);
-        recv(socket.getDescriptor(), message.data(), messageSize, 0);
+        auto received = recv(socket.getDescriptor(), message.data(), messageSize, 0);
         queue.push(std::move(message));
         reading = false;
     }
@@ -33,4 +33,8 @@ int chs::IncomingMessageQueue::getBufferSize() const {
     int bytes_available{0};
     ioctl(socket.getDescriptor(),FIONREAD,&bytes_available);
     return bytes_available;
+}
+
+bool chs::IncomingMessageQueue::isNotEmpty() {
+    return !queue.empty();
 }

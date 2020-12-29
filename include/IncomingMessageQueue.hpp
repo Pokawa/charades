@@ -12,7 +12,7 @@ namespace chs{
     class IncomingMessageQueue {
     private:
         std::queue<chs::Message> queue;
-        int messageSize;
+        std::size_t messageSize;
         const chs::WebSocket & socket;
         bool reading;
 
@@ -20,6 +20,7 @@ namespace chs{
         explicit IncomingMessageQueue(const chs::WebSocket & socket);
         void readMessages();
         chs::Message getMessage();
+        bool isNotEmpty();
 
     private:
         [[nodiscard]] int getBufferSize() const;
