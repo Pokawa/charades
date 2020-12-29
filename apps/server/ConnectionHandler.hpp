@@ -22,7 +22,8 @@ public:
     explicit ConnectionHandler(std::string port);
     void openServer();
     bool acceptClient();
-    std::vector<pollfd> getPollSockets();
+    const chs::WebSocket& getLastClient();
+    const std::vector<pollfd> & getPollSockets();
 
 private:
     static void setSocketToNonBlock(int socket);

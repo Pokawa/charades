@@ -61,7 +61,7 @@ void ConnectionHandler::openServer() {
     spdlog::info("Successfully started server on port {}", this->port);
 }
 
-std::vector<pollfd> ConnectionHandler::getPollSockets() {
+const std::vector<pollfd> & ConnectionHandler::getPollSockets() {
     return pollSockets;
 }
 
@@ -78,6 +78,10 @@ void ConnectionHandler::removeFromPoll(int socket) {
     auto pos = std::find_if(pollSockets.begin(), pollSockets.end(), [&socket](const pollfd & sock){ return sock.fd == socket; });
     if (pos != pollSockets.end())
         pollSockets.erase(pos);
+}
+
+const chs::WebSocket& ConnectionHandler::getLastClient() {
+    return clientsSockets.back();
 }
 
 
