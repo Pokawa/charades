@@ -21,8 +21,6 @@ namespace chs {
         explicit OutgoingMessageQueue(const chs::WebSocket & socket);
         void sendMessages();
         void putMessage(chs::Message);
-
-
     };
 }
 
