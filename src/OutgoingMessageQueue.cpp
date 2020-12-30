@@ -17,9 +17,12 @@ void chs::OutgoingMessageQueue::sendMessages() {
     while (not queue.empty() and not blocked) {
         if (not sending) {
             currentMessage = chs::constructMessage(queue.front(), queue.front().size());
+            queue.pop();
             sending = true;
             sentOffset = 0;
-        } else {
+        }
+
+        if (sending) {
             auto startingAddress = currentMessage.data() + sentOffset;
             auto remainingLength = currentMessage.size() - sentOffset;
             auto sentBytes = send(socket.getDescriptor(),  startingAddress, remainingLength, 0);
