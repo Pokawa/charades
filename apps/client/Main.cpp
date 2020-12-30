@@ -8,6 +8,8 @@
 #include <OutgoingMessageQueue.hpp>
 #include <Message.hpp>
 #include <spdlog/spdlog.h>
+#include <IncomingMessageQueue.hpp>
+#include <unistd.h>
 #include "spdlog/fmt/bin_to_hex.h"
 
 
@@ -37,10 +39,17 @@ int main(int argc, char** argv){
 
 
     chs::OutgoingMessageQueue queue{webSocket};
+    chs::IncomingMessageQueue inQueue{webSocket};
 
     auto login = chs::constructMessage(chs::MessageType::LOG_IN, "hubcio");
     queue.putMessage(login);
     queue.sendMessages();
+
+    sleep(2);
+
+    inQueue.readMessages();
+    auto mess = inQueue.getMessage();
+    spdlog::info("message: {}", mess);
 
     auto logout = chs::constructMessage(chs::MessageType::LOG_OUT);
     queue.putMessage(logout);

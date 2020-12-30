@@ -5,8 +5,6 @@
 #include "ConnectionHandler.hpp"
 #include "IOHandler.hpp"
 #include "PlayersHandler.hpp"
-#include <Message.hpp>
-
 
 int main(int argc, char** argv){
     if(argc != 2) {
@@ -15,7 +13,7 @@ int main(int argc, char** argv){
     }
 
     ConnectionHandler connectionHandler{argv[1]};
-    IOHandler ioHandler;
+    IOHandler ioHandler{connectionHandler};
     PlayersHandler playersHandler;
 
     while(true) {
@@ -41,13 +39,21 @@ int main(int argc, char** argv){
                         if (playersHandler.isNameAvailable(name)){
                             playersHandler.addPlayer(name, client);
                             spdlog::info("Connected player: {} from: {}", name, client.getAddress());
+                            auto message = chs::constructMessage("hubcio xddd");
+                            ioHandler.putMessage(client, message);
                         }
                     }
 
                     if (type == chs::MessageType::LOG_OUT) {
                         connectionHandler.closeClient(client);
+                        continue;
                     }
                 }
+            }
+
+            if (pollSockets[i].revents & POLLOUT) {
+                auto client = connectionHandler.getWebSocket(pollSockets[i].fd);
+                ioHandler.sendTo(client);
             }
         }
     }
