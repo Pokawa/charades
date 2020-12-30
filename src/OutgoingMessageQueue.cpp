@@ -14,29 +14,25 @@ void chs::OutgoingMessageQueue::putMessage(chs::Message message) {
 }
 
 void chs::OutgoingMessageQueue::sendMessages() {
-    if (not sending and not queue.empty()) {
-        currentMessage = std::move(queue.front());
-        queue.pop();
-        sending = true;
-        sentOffset = 0;
-
-        auto messageSize = currentMessage.size();
-        send(socket.getDescriptor(), &messageSize, sizeof(messageSize), 0);
-        //TODO error handling
-    }
-
-    if (sending) {
-        auto startingAddress = currentMessage.data() + sentOffset;
-        auto remainingLength = currentMessage.size() - sentOffset;
-        auto sentBytes = send(socket.getDescriptor(),  startingAddress, remainingLength, 0);
-
-        if (sentBytes == -1) {
-            spdlog::critical("Sending error: {}", strerror(errno));
+    while (not queue.empty() and not blocked) {
+        if (not sending) {
+            currentMessage = chs::constructMessage(queue.front(), queue.front().size());
+            sending = true;
+            sentOffset = 0;
+        } else {
+            auto startingAddress = currentMessage.data() + sentOffset;
+            auto remainingLength = currentMessage.size() - sentOffset;
+            auto sentBytes = send(socket.getDescriptor(),  startingAddress, remainingLength, 0);
+            sentOffset += sentBytes;
+            if (sentOffset == currentMessage.size()) {
+                sending = false;
+            } else {
+                blocked = true;
+            }
         }
-
-        sentOffset += sentBytes;
-
-        if (sentOffset == currentMessage.size())
-            sending = false;
     }
+}
+
+bool chs::OutgoingMessageQueue::isBlocked() {
+    return blocked;
 }

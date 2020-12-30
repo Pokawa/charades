@@ -7,6 +7,7 @@
 
 #include <queue>
 #include "WebSocket.hpp"
+#include "Message.hpp"
 
 namespace chs {
     using Message = std::string;
@@ -17,12 +18,14 @@ namespace chs {
         const chs::WebSocket & socket;
         chs::Message currentMessage;
         bool sending;
+        bool blocked;
         int sentOffset;
 
     public:
         explicit OutgoingMessageQueue(const chs::WebSocket & socket);
         void sendMessages();
         void putMessage(chs::Message);
+        bool isBlocked();
     };
 }
 
