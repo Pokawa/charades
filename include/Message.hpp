@@ -17,9 +17,9 @@ namespace chs{
         LOG_OUT
     };
 
-    std::size_t messageSize(const std::string& arg) {
-        return arg.size() + 1;
-    }
+    MessageType getMessageType(const chs::Message & message);
+
+    std::size_t messageSize(const std::string& arg);
 
     template<typename T>
     std::size_t messageSize(const T& arg) {
@@ -31,15 +31,8 @@ namespace chs{
         return messageSize(arg) + messageSize(leftOver...);
     }
 
-    char * serializeMessage(char * message, const std::string& arg) {
-        strcpy(message, arg.data());
-        return message + arg.size() + 1;
-    }
-
-    char * serializeMessage(char * message, const char* arg) {
-        strcpy(message, arg);
-        return message + strlen(arg) + 1;
-    }
+    char * serializeMessage(char * message, const std::string& arg);
+    char * serializeMessage(char * message, const char* arg);
 
     template<typename T>
     char * serializeMessage(char * message, const T& arg) {
@@ -70,23 +63,12 @@ namespace chs{
     }
 
     template<>
-    std::string deserializeMessage<std::string>(char *& message) {
-        std::string object{message};
-        message += object.size() + 1;
-        return object;
-    }
+    std::string deserializeMessage<std::string>(char *& message);
 
     template<typename ... T>
     std::tuple<T...> deconstructMessage(chs::Message & message) {
         auto ptr = message.data();
         return std::make_tuple(deserializeMessage<T>(ptr)...);
-    }
-
-    MessageType getMessageType(const chs::Message & message) {
-        MessageType type;
-        auto addr = message.data() + message.size() - sizeof(type);
-        memcpy(&type, addr, sizeof(type));
-        return type;
     }
 }
 
