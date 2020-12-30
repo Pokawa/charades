@@ -77,14 +77,15 @@ namespace chs{
     }
 
     template<typename ... T>
-    std::tuple<T...> deconstructMessage(const chs::Message & message) {
+    std::tuple<T...> deconstructMessage(chs::Message & message) {
         auto ptr = message.data();
         return std::make_tuple(deserializeMessage<T>(ptr)...);
     }
 
     MessageType getMessageType(const chs::Message & message) {
         MessageType type;
-        memcpy(&type, message.data(), sizeof(type));
+        auto addr = message.data() + message.size() - sizeof(type);
+        memcpy(&type, addr, sizeof(type));
         return type;
     }
 }
