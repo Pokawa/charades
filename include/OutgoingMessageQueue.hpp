@@ -5,7 +5,7 @@
 #pragma once
 
 #include <queue>
-#include "IncomingMessage.hpp"
+#include "Message.hpp"
 #include "WebSocket.hpp"
 
 namespace chs {

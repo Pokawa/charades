@@ -8,6 +8,7 @@
 
 namespace chs{
     using Message = std::string;
-    using IncomingMessage = Message;
+
+
 }
 
