@@ -17,6 +17,8 @@ private:
     std::vector<Player> players;
 
 public:
+    void addPlayer(const std::string& name, const chs::WebSocket& webSocket);
+    bool isNameAvailable(const std::string& name);
 };
 
 

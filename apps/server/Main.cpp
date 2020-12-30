@@ -4,6 +4,8 @@
 #include <spdlog/spdlog.h>
 #include "ConnectionHandler.hpp"
 #include "IOHandler.hpp"
+#include "PlayersHandler.hpp"
+#include <Message.hpp>
 
 
 int main(int argc, char** argv){
@@ -14,6 +16,7 @@ int main(int argc, char** argv){
 
     ConnectionHandler connectionHandler{argv[1]};
     IOHandler ioHandler;
+    PlayersHandler playersHandler;
 
     while(true) {
         auto pollSockets = connectionHandler.getPollSockets();
@@ -31,7 +34,19 @@ int main(int argc, char** argv){
 
                 if (ioHandler.isMessageToGet(client)) {
                     auto message = ioHandler.getMessage(client);
-                    spdlog::info("Received message from {} : \"{}\"", client.getAddress(), message);
+                    auto type = chs::getMessageType(message);
+
+                    if (type == chs::MessageType::LOG_IN) {
+                        auto [name] = chs::deconstructMessage<std::string>(message);
+                        if (playersHandler.isNameAvailable(name)){
+                            playersHandler.addPlayer(name, client);
+                            spdlog::info("Connected player: {} from: {}", name, client.getAddress());
+                        }
+                    }
+
+                    if (type == chs::MessageType::LOG_OUT) {
+                        connectionHandler.closeClient(client);
+                    }
                 }
             }
         }
