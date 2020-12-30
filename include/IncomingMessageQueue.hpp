@@ -2,13 +2,16 @@
 // Created by hubert on 27.12.2020.
 //
 
-#pragma once
+#ifndef INGOINGMESSAGEQUEUE_HPP
+#define INGOINGMESSAGEQUEUE_HPP
+
 
 #include <queue>
-#include "Message.hpp"
 #include "WebSocket.hpp"
 
 namespace chs{
+    using Message = std::string;
+
     class IncomingMessageQueue {
     private:
         std::queue<chs::Message> queue;
@@ -28,5 +31,6 @@ namespace chs{
 
 }
 
+#endif //INGOINGMESSAGEQUEUE_HPP
 
 

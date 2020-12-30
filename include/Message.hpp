@@ -2,15 +2,20 @@
 // Created by hubert on 27.12.2020.
 //
 
-#pragma once
+#ifndef MESSAGE_HPP
+#define MESSAGE_HPP
 
 #include <string>
 #include <cstring>
 #include <spdlog/spdlog.h>
 
-
 namespace chs{
     using Message = std::string;
+
+    enum class MessageType {
+        LOG_IN,
+        LOG_OUT
+    };
 
     std::size_t messageSize(const std::string& arg) {
         return arg.size() + 1;
@@ -72,8 +77,16 @@ namespace chs{
     }
 
     template<typename ... T>
-    std::tuple<T...> deconstructMessage(char * message) {
-        return std::make_tuple(deserializeMessage<T>(message)...);
+    std::tuple<T...> deconstructMessage(const chs::Message & message) {
+        auto ptr = message.data();
+        return std::make_tuple(deserializeMessage<T>(ptr)...);
+    }
+
+    MessageType getMessageType(const chs::Message & message) {
+        MessageType type;
+        memcpy(&type, message.data(), sizeof(type));
+        return type;
     }
 }
 
+#endif //MESSAGE_HPP

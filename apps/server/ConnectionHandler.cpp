@@ -4,7 +4,6 @@
 
 #include <netdb.h>
 #include <spdlog/spdlog.h>
-#include <fmt/format.h>
 #include <arpa/inet.h>
 #include <utility>
 #include <fcntl.h>

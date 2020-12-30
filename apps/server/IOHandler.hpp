@@ -2,7 +2,8 @@
 // Created by hubert on 29.12.2020.
 //
 
-#pragma once
+#ifndef CHARADES_IOHANDLER_HPP
+#define CHARADES_IOHANDLER_HPP
 
 #include <map>
 #include <WebSocket.hpp>
@@ -24,3 +25,5 @@ public:
     bool isMessageToGet(const chs::WebSocket & socket);
     chs::Message getMessage(const chs::WebSocket & socket);
 };
+
+#endif //CHARADES_IOHANDLER_HPP

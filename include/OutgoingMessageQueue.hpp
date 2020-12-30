@@ -2,13 +2,15 @@
 // Created by hubert on 29.12.2020.
 //
 
-#pragma once
+#ifndef OUTGOINGMESSAGEQUEUE_HPP
+#define OUTGOINGMESSAGEQUEUE_HPP
 
 #include <queue>
-#include "Message.hpp"
 #include "WebSocket.hpp"
 
 namespace chs {
+    using Message = std::string;
+
     class OutgoingMessageQueue {
     private:
         std::queue<chs::Message> queue;
@@ -24,4 +26,5 @@ namespace chs {
     };
 }
 
+#endif //OUTGOINGMESSAGEQUEUE_HPP
 

@@ -2,9 +2,8 @@
 // Created by hubert on 26.12.2020.
 //
 
-//#ifndef CHARADES_SERVER_HPP
-//#define CHARADES_SERVER_HPP
-#pragma once
+#ifndef CHARADES_CONNECTIONHANDLER_HPP
+#define CHARADES_CONNECTIONHANDLER_HPP
 
 #include <string>
 #include <vector>
@@ -33,4 +32,4 @@ private:
 };
 
 
-//#endif //CHARADES_SERVER_HPP
+#endif //CHARADES_CONNECTIONHANDLER_HPP

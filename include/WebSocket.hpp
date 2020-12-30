@@ -2,9 +2,8 @@
 // Created by hubert on 27.12.2020.
 //
 
-//#ifndef CHARADES_WEBSOCKET_H
-//#define CHARADES_WEBSOCKET_H
-#pragma once
+#ifndef CHARADES_WEBSOCKET_H
+#define CHARADES_WEBSOCKET_H
 
 #include <resolv.h>
 #include <string>
@@ -30,6 +29,4 @@ namespace chs {
 }
 
 
-
-
-//#endif //CHARADES_WEBSOCKET_H
+#endif //CHARADES_WEBSOCKET_H
