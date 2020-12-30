@@ -5,6 +5,7 @@
 #include <arpa/inet.h>
 #include <unistd.h>
 #include "WebSocket.hpp"
+#include <spdlog/spdlog.h>
 
 chs::WebSocket::WebSocket(int fd, sockaddr_in sockInfo)  : descriptor(fd), sockInfo(sockInfo) {}
 
@@ -24,8 +25,5 @@ void chs::WebSocket::close() const {
     ::close(descriptor);
 }
 
-chs::WebSocket::~WebSocket() {
-    close();
-}
 
 

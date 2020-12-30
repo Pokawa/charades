@@ -22,8 +22,6 @@ namespace chs {
         [[nodiscard]] uint16_t getPort() const;
         [[nodiscard]] int getDescriptor() const;
         void close() const;
-
-        ~WebSocket();
     };
 
 }
