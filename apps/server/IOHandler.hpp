@@ -9,14 +9,17 @@
 #include <WebSocket.hpp>
 #include <IncomingMessageQueue.hpp>
 #include <OutgoingMessageQueue.hpp>
+#include "ConnectionHandler.hpp"
 
 class IOHandler {
 private:
     std::map<int, chs::IncomingMessageQueue> incomingQueues;
     std::map<int, chs::OutgoingMessageQueue> outgoingQueues;
+    ConnectionHandler& connectionHandler;
 
 public:
 
+    IOHandler(ConnectionHandler& connectionHandler);
     void addClient(const chs::WebSocket & socket);
     void removeClient(const chs::WebSocket & socket);
     void receiveFrom(const chs::WebSocket & socket);

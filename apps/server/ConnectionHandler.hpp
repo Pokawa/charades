@@ -23,13 +23,16 @@ public:
     bool acceptClient();
     const chs::WebSocket& getLastClient();
     const chs::WebSocket& getWebSocket(const int &socket);
-    const std::vector<pollfd> & getPollSockets();
-    void closeClient(const chs::WebSocket&);
+    std::vector<pollfd> getPollSockets();
+    void closeClient(const chs::WebSocket& client);
+    void setForWrite(const chs::WebSocket& client);
+    void unsetForWrite(const chs::WebSocket & client);
 
 private:
     static void setSocketToNonBlock(int socket);
     void addToPoll(int socket, short events);
     void removeFromPoll(int socket);
+    pollfd & getPollFd(const chs::WebSocket & client);
 };
 
 

@@ -60,7 +60,7 @@ void ConnectionHandler::openServer() {
     spdlog::info("Successfully started server on port {}", this->port);
 }
 
-const std::vector<pollfd> & ConnectionHandler::getPollSockets() {
+std::vector<pollfd>ConnectionHandler::getPollSockets() {
     return pollSockets;
 }
 
@@ -102,6 +102,20 @@ void ConnectionHandler::closeClient(const chs::WebSocket & client) {
         auto pollPosition = pollSockets.begin() + (pos - clientsSockets.begin()) + 1;
         pollSockets.erase(pollPosition);
     }
+}
+
+void ConnectionHandler::setForWrite(const chs::WebSocket & client) {
+    getPollFd(client).events |= POLLOUT;
+}
+
+void ConnectionHandler::unsetForWrite(const chs::WebSocket & client) {
+    getPollFd(client).events &= ~POLLOUT;
+}
+
+pollfd &ConnectionHandler::getPollFd(const chs::WebSocket & client) {
+    auto pos = std::find_if(pollSockets.begin(), pollSockets.end(),
+                            [&client](const pollfd & fd){ return client.getDescriptor() == fd.fd; });
+    return *pos;
 }
 
 
