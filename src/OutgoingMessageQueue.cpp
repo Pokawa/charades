@@ -4,6 +4,7 @@
 
 #include "OutgoingMessageQueue.hpp"
 #include <netdb.h>
+#include <spdlog/spdlog.h>
 
 chs::OutgoingMessageQueue::OutgoingMessageQueue(const chs::WebSocket & socket) : socket(socket), sending(false), sentOffset(0){
 }
@@ -28,7 +29,11 @@ void chs::OutgoingMessageQueue::sendMessages() {
         auto startingAddress = currentMessage.data() + sentOffset;
         auto remainingLength = currentMessage.size() - sentOffset;
         auto sentBytes = send(socket.getDescriptor(),  startingAddress, remainingLength, 0);
-        //TODO error handling
+
+        if (sentBytes == -1) {
+            spdlog::critical("Sending error: {}", strerror(errno));
+        }
+
         sentOffset += sentBytes;
 
         if (sentOffset == currentMessage.size())
