@@ -16,7 +16,7 @@ void chs::IncomingMessageQueue::readMessages() {
     }
 
     if (getBufferSize() >= messageSize and reading) {
-        chs::IncomingMessage message(messageSize, 0);
+        chs::Message message(messageSize, 0);
         auto received = recv(socket.getDescriptor(), message.data(), messageSize, 0);
         queue.push(std::move(message));
         reading = false;
