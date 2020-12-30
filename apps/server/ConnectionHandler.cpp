@@ -90,5 +90,19 @@ const chs::WebSocket &ConnectionHandler::getWebSocket(const int &socket) {
     return *position;
 }
 
+void ConnectionHandler::closeClient(const chs::WebSocket & client) {
+    auto pos = std::find_if(clientsSockets.begin(), clientsSockets.end(),
+                            [&client](const chs::WebSocket & socket){ return client.getDescriptor() == socket.getDescriptor(); });
+    if (pos != clientsSockets.end()) {
+        spdlog::info("Closing connection with {}", client.getAddress());
+
+        client.close();
+        clientsSockets.erase(pos);
+
+        auto pollPosition = pollSockets.begin() + (pos - clientsSockets.begin()) + 1;
+        pollSockets.erase(pollPosition);
+    }
+}
+
 
 

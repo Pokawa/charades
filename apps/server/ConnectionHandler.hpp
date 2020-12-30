@@ -24,6 +24,7 @@ public:
     const chs::WebSocket& getLastClient();
     const chs::WebSocket& getWebSocket(const int &socket);
     const std::vector<pollfd> & getPollSockets();
+    void closeClient(const chs::WebSocket&);
 
 private:
     static void setSocketToNonBlock(int socket);
