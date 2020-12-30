@@ -6,6 +6,7 @@
 
 #include <string>
 #include <cstring>
+#include <spdlog/spdlog.h>
 
 
 namespace chs{
@@ -30,6 +31,11 @@ namespace chs{
         return message + arg.size() + 1;
     }
 
+    char * serializeMessage(char * message, const char* arg) {
+        strcpy(message, arg);
+        return message + strlen(arg) + 1;
+    }
+
     template<typename T>
     char * serializeMessage(char * message, const T& arg) {
         memcpy(message, &arg, sizeof(arg));
@@ -38,8 +44,8 @@ namespace chs{
 
     template<typename T, typename ... L>
     char * serializeMessage(char * message, const T& arg, const L& ... args){
-        auto addr = serializeMessage(message, arg);
-        return serializeMessage(addr, args...);
+        auto addr = serializeMessage(message, args...);
+        return serializeMessage(addr, arg);
     }
 
     template<typename ... T>
@@ -48,6 +54,26 @@ namespace chs{
         chs::Message message(size, 0);
         serializeMessage(message.data(), args...);
         return message;
+    }
+
+    template<typename T>
+    T deserializeMessage(char *& message) {
+        T object;
+        memcpy(&object, message, sizeof(T));
+        message += sizeof(T);
+        return object;
+    }
+
+    template<>
+    std::string deserializeMessage<std::string>(char *& message) {
+        std::string object{message};
+        message += object.size() + 1;
+        return object;
+    }
+
+    template<typename ... T>
+    std::tuple<T...> deconstructMessage(char * message) {
+        return std::make_tuple(deserializeMessage<T>(message)...);
     }
 }
 
