@@ -23,7 +23,7 @@ namespace chs{
 
     public:
         explicit IncomingMessageQueue(const chs::Socket & socket);
-        void readMessages();
+        bool readMessages();
         chs::Message getMessage();
         bool isNotEmpty();
 

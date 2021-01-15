@@ -5,11 +5,12 @@
 #include <resolv.h>
 #include <sys/ioctl.h>
 #include "IncomingMessageQueue.hpp"
+#include <spdlog/spdlog.h>
 
 chs::IncomingMessageQueue::IncomingMessageQueue(const chs::Socket & socket) : socket(socket), reading(false), messageSize(0), readBytes(0) {
 }
 
-void chs::IncomingMessageQueue::readMessages() {
+bool chs::IncomingMessageQueue::readMessages() {
     while ((getBufferSize() > 0 and reading) or (not reading and getBufferSize() >= sizeof(std::size_t))){
 
         if (not reading) {
@@ -24,22 +25,23 @@ void chs::IncomingMessageQueue::readMessages() {
         auto bytes = recv(socket.getDescriptor(), writeOffset, remainingSize, 0);
 
         if (bytes == -1) {
-            //TODO error handling
-        } else {
-            readBytes += bytes;
+            spdlog::error("Reading from socket error: {}", strerror(errno));
+            return false;
         }
 
+        readBytes += bytes;
         if (readBytes == messageSize) {
             queue.push(std::move(currentMessage));
             reading = false;
         }
     }
+    return true;
 }
 
 chs::Message chs::IncomingMessageQueue::getMessage() {
     auto message = std::move(queue.front());
     queue.pop();
-    return std::move(message);
+    return message;
 }
 
 int chs::IncomingMessageQueue::getBufferSize() const {

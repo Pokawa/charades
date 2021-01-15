@@ -6,14 +6,16 @@
 #include <netdb.h>
 #include <spdlog/spdlog.h>
 
-chs::OutgoingMessageQueue::OutgoingMessageQueue(const chs::Socket & socket) : socket(socket), sending(false), sentOffset(0){
+chs::OutgoingMessageQueue::OutgoingMessageQueue(const chs::Socket & socket) : socket(socket), sending(false), sentOffset(0), blocked(false){
 }
 
 void chs::OutgoingMessageQueue::putMessage(chs::Message message) {
     queue.push(std::move(message));
 }
 
-void chs::OutgoingMessageQueue::sendMessages() {
+bool chs::OutgoingMessageQueue::sendMessages() {
+    blocked = false;
+
     while (not queue.empty() and not blocked) {
         if (not sending) {
             currentMessage = chs::constructMessage(queue.front(), queue.front().size());
@@ -26,6 +28,12 @@ void chs::OutgoingMessageQueue::sendMessages() {
             auto startingAddress = currentMessage.data() + sentOffset;
             auto remainingLength = currentMessage.size() - sentOffset;
             auto sentBytes = send(socket.getDescriptor(),  startingAddress, remainingLength, 0);
+
+            if (sentBytes == -1) {
+                spdlog::error("Sending to socket error: {}", strerror(errno));
+                return false;
+            }
+
             sentOffset += sentBytes;
             if (sentOffset == currentMessage.size()) {
                 sending = false;
@@ -34,8 +42,9 @@ void chs::OutgoingMessageQueue::sendMessages() {
             }
         }
     }
+    return true;
 }
 
-bool chs::OutgoingMessageQueue::isBlocked() {
+bool chs::OutgoingMessageQueue::isBlocked() const {
     return blocked;
 }
