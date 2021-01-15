@@ -7,17 +7,16 @@
 
 #include <resolv.h>
 #include <string>
-#include "WebSocket.hpp"
 
 namespace chs {
 
-    class WebSocket {
+    class Socket {
     private:
         int descriptor;
         sockaddr_in sockInfo;
 
     public:
-        WebSocket(int fd, sockaddr_in sockInfo);
+        Socket(int fd, sockaddr_in sockInfo);
         [[nodiscard]] std::string getAddress() const;
         [[nodiscard]] uint16_t getPort() const;
         [[nodiscard]] int getDescriptor() const;

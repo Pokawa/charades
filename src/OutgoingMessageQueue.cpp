@@ -6,7 +6,7 @@
 #include <netdb.h>
 #include <spdlog/spdlog.h>
 
-chs::OutgoingMessageQueue::OutgoingMessageQueue(const chs::WebSocket & socket) : socket(socket), sending(false), sentOffset(0){
+chs::OutgoingMessageQueue::OutgoingMessageQueue(const chs::Socket & socket) : socket(socket), sending(false), sentOffset(0){
 }
 
 void chs::OutgoingMessageQueue::putMessage(chs::Message message) {

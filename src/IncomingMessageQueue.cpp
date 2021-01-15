@@ -6,7 +6,7 @@
 #include <sys/ioctl.h>
 #include "IncomingMessageQueue.hpp"
 
-chs::IncomingMessageQueue::IncomingMessageQueue(const chs::WebSocket & socket) : socket(socket), reading(false), messageSize(0) {
+chs::IncomingMessageQueue::IncomingMessageQueue(const chs::Socket & socket) : socket(socket), reading(false), messageSize(0) {
 }
 
 void chs::IncomingMessageQueue::readMessages() {

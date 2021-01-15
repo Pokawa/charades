@@ -33,7 +33,7 @@ int main(int argc, char** argv){
     if (res)
         error(1, errno, "connect failed");
 
-    chs::WebSocket webSocket{sock, {}};
+    chs::Socket webSocket{sock, {}};
     // free memory
     freeaddrinfo(resolved);
 

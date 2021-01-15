@@ -6,7 +6,7 @@
 #define CHARADES_PLAYER_HPP
 
 #include <string>
-#include <WebSocket.hpp>
+#include <Socket.hpp>
 
 class Room;
 
@@ -15,11 +15,11 @@ public:
     std::string name;
 
 private:
-    chs::WebSocket webSocket;
+    chs::Socket webSocket;
     Room * currentRoom;
 
 public:
-    Player(std::string name, const chs::WebSocket& webSocket);
+    Player(std::string name, const chs::Socket& webSocket);
     void enterRoom(Room & room);
     void exitRoom();
 };

@@ -5,7 +5,7 @@
 #include "PlayersHandler.hpp"
 #include <algorithm>
 
-void PlayersHandler::addPlayer(const std::string &name, const chs::WebSocket& webSocket) {
+void PlayersHandler::addPlayer(const std::string &name, const chs::Socket& webSocket) {
     players.emplace_back(name, webSocket);
 }
 

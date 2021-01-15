@@ -7,7 +7,7 @@
 
 
 #include <queue>
-#include "WebSocket.hpp"
+#include "Socket.hpp"
 
 namespace chs{
     using Message = std::string;
@@ -16,11 +16,11 @@ namespace chs{
     private:
         std::queue<chs::Message> queue;
         std::size_t messageSize;
-        const chs::WebSocket & socket;
+        const chs::Socket & socket;
         bool reading;
 
     public:
-        explicit IncomingMessageQueue(const chs::WebSocket & socket);
+        explicit IncomingMessageQueue(const chs::Socket & socket);
         void readMessages();
         chs::Message getMessage();
         bool isNotEmpty();

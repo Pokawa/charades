@@ -5,7 +5,7 @@
 #include "Player.hpp"
 #include <utility>
 
-Player::Player(std::string name, const chs::WebSocket& webSocket) : name(std::move(name)), webSocket(webSocket){
+Player::Player(std::string name, const chs::Socket& webSocket) : name(std::move(name)), webSocket(webSocket){
 }
 
 void Player::enterRoom(Room & newRoom) {

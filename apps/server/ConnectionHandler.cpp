@@ -80,19 +80,19 @@ void ConnectionHandler::removeFromPoll(int socket) {
         pollSockets.erase(pos);
 }
 
-const chs::WebSocket& ConnectionHandler::getLastClient() {
+const chs::Socket& ConnectionHandler::getLastClient() {
     return clientsSockets.back();
 }
 
-const chs::WebSocket &ConnectionHandler::getWebSocket(const int &socket) {
+const chs::Socket &ConnectionHandler::getWebSocket(const int &socket) {
     auto position = std::find_if(clientsSockets.begin(), clientsSockets.end(),
-                                 [&socket](const chs::WebSocket & sock){ return sock.getDescriptor() == socket; });
+                                 [&socket](const chs::Socket & sock){ return sock.getDescriptor() == socket; });
     return *position;
 }
 
-void ConnectionHandler::closeClient(const chs::WebSocket & client) {
+void ConnectionHandler::closeClient(const chs::Socket & client) {
     auto pos = std::find_if(clientsSockets.begin(), clientsSockets.end(),
-                            [&client](const chs::WebSocket & socket){ return client.getDescriptor() == socket.getDescriptor(); });
+                            [&client](const chs::Socket & socket){ return client.getDescriptor() == socket.getDescriptor(); });
     if (pos != clientsSockets.end()) {
         spdlog::info("Closing connection with {}", client.getAddress());
 
@@ -104,15 +104,15 @@ void ConnectionHandler::closeClient(const chs::WebSocket & client) {
     }
 }
 
-void ConnectionHandler::setForWrite(const chs::WebSocket & client) {
+void ConnectionHandler::setForWrite(const chs::Socket & client) {
     getPollFd(client).events |= POLLOUT;
 }
 
-void ConnectionHandler::unsetForWrite(const chs::WebSocket & client) {
+void ConnectionHandler::unsetForWrite(const chs::Socket & client) {
     getPollFd(client).events &= ~POLLOUT;
 }
 
-pollfd &ConnectionHandler::getPollFd(const chs::WebSocket & client) {
+pollfd &ConnectionHandler::getPollFd(const chs::Socket & client) {
     auto pos = std::find_if(pollSockets.begin(), pollSockets.end(),
                             [&client](const pollfd & fd){ return client.getDescriptor() == fd.fd; });
     return *pos;

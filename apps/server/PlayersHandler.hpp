@@ -5,7 +5,7 @@
 #ifndef CHARADES_PLAYERSHANDLER_HPP
 #define CHARADES_PLAYERSHANDLER_HPP
 
-#include <WebSocket.hpp>
+#include <Socket.hpp>
 #include <vector>
 #include <memory>
 #include <poll.h>
@@ -17,7 +17,7 @@ private:
     std::vector<Player> players;
 
 public:
-    void addPlayer(const std::string& name, const chs::WebSocket& webSocket);
+    void addPlayer(const std::string& name, const chs::Socket& webSocket);
     bool isNameAvailable(const std::string& name);
 };
 

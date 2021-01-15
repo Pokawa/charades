@@ -6,7 +6,7 @@
 #define OUTGOINGMESSAGEQUEUE_HPP
 
 #include <queue>
-#include "WebSocket.hpp"
+#include "Socket.hpp"
 #include "Message.hpp"
 
 namespace chs {
@@ -15,14 +15,14 @@ namespace chs {
     class OutgoingMessageQueue {
     private:
         std::queue<chs::Message> queue;
-        const chs::WebSocket & socket;
+        const chs::Socket & socket;
         chs::Message currentMessage;
         bool sending;
         bool blocked;
         int sentOffset;
 
     public:
-        explicit OutgoingMessageQueue(const chs::WebSocket & socket);
+        explicit OutgoingMessageQueue(const chs::Socket & socket);
         void sendMessages();
         void putMessage(chs::Message);
         bool isBlocked();
