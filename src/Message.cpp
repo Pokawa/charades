@@ -4,12 +4,13 @@
 
 #include <Message.hpp>
 
+template<>
 std::size_t chs::messageSize(const std::string& arg) {
     return arg.size() + 1;
 }
 
 char * chs::serializeMessage(char * message, const std::string& arg) {
-    strcpy(message, arg.data());
+    memcpy(message, arg.data(), arg.size());
     return message + arg.size() + 1;
 }
 

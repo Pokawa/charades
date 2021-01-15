@@ -19,12 +19,15 @@ namespace chs{
 
     MessageType getMessageType(const chs::Message & message);
 
-    std::size_t messageSize(const std::string& arg);
+
 
     template<typename T>
     std::size_t messageSize(const T& arg) {
         return sizeof(arg);
     }
+
+    template<>
+    std::size_t messageSize(const std::string& arg);
 
     template<typename T, typename ... L>
     std::size_t messageSize(const T& arg, const L& ...leftOver) {
