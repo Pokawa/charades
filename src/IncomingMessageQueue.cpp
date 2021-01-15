@@ -6,19 +6,31 @@
 #include <sys/ioctl.h>
 #include "IncomingMessageQueue.hpp"
 
-chs::IncomingMessageQueue::IncomingMessageQueue(const chs::Socket & socket) : socket(socket), reading(false), messageSize(0) {
+chs::IncomingMessageQueue::IncomingMessageQueue(const chs::Socket & socket) : socket(socket), reading(false), messageSize(0), readBytes(0) {
 }
 
 void chs::IncomingMessageQueue::readMessages() {
-    while (getBufferSize() >= sizeof(std::size_t)) {
+    while ((getBufferSize() > 0 and reading) or (not reading and getBufferSize() >= sizeof(std::size_t))){
+
         if (not reading) {
             reading = true;
             recv(socket.getDescriptor(), &messageSize, sizeof(messageSize), 0);
-        } else if (getBufferSize() >= messageSize) {
-            chs::Message message(messageSize, 0);
-            recv(socket.getDescriptor(), message.data(), messageSize, 0);
+            currentMessage = std::string(messageSize, 0);
+            readBytes = 0;
+        }
+
+        auto writeOffset = currentMessage.data() + readBytes;
+        auto remainingSize = messageSize - readBytes;
+        auto bytes = recv(socket.getDescriptor(), writeOffset, remainingSize, 0);
+
+        if (bytes == -1) {
             //TODO error handling
-            queue.push(std::move(message));
+        } else {
+            readBytes += bytes;
+        }
+
+        if (readBytes == messageSize) {
+            queue.push(std::move(currentMessage));
             reading = false;
         }
     }
