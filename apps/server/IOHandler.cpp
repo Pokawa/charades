@@ -45,9 +45,9 @@ bool IOHandler::isMessageToGet(const chs::Socket &socket) {
 IOHandler::IOHandler(ConnectionHandler& connectionHandler) : connectionHandler(connectionHandler) {
 }
 
-void IOHandler::putMessages(const chs::Socket &socket, const std::vector<chs::Message> & messages) {
+void IOHandler::putMessages(const chs::Socket &socket, std::vector<chs::Message> & messages) {
     auto& queue = outgoingQueues.at(socket.getDescriptor());
-    auto putMessage = [&queue](chs::Message & message){queue.putMessage(std::move(message)); };
+    auto putMessage = [&queue](chs::Message & message){ queue.putMessage(std::move(message)); };
     std::for_each(messages.begin(), messages.end(), putMessage);
     connectionHandler.setForWrite(socket);
 }
