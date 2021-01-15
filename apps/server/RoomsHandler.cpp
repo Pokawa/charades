@@ -13,7 +13,7 @@ void RoomsHandler::newRoom(Player *owner) {
 
 std::vector<chs::Message> RoomsHandler::getRoomsInfo() {
     std::vector<chs::Message> roomsInfo;
-    auto getRoomInfo = [](Room * room){ return room->GetRoomInfo(); };
+    auto getRoomInfo = [](const Room & room){ return room.getRoomInfo(); };
     std::transform(rooms.begin(), rooms.end(), std::back_inserter(roomsInfo), getRoomInfo);
     return roomsInfo;
 }

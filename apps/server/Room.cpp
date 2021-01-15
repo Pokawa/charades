@@ -14,18 +14,23 @@ void Room::removePlayer(Player* player) {
     players.erase(std::remove(players.begin(), players.end(), player), players.end());
 }
 
-chs::Message Room::GetRoomInfo() {
+chs::Message Room::getRoomInfo() const {
+    return roomInfo;
+}
+
+void Room::refreshRoomInfo() {
     std::vector<std::string> playerNames;
     auto getPlayerName = [](const Player * player){ return player->name; };
     std::transform(players.begin(), players.end(), std::back_inserter(playerNames), getPlayerName);
     auto joinedNames = chs::joinStrings(playerNames, ";");
-    return chs::constructMessage(chs::MessageType::ROOM_INFO, roomNumber, joinedNames);
+    roomInfo = chs::constructMessage(chs::MessageType::ROOM_INFO, roomNumber, joinedNames);
 }
 
-Room::Room(int roomNumber) : roomNumber(roomNumber) {
+Room::Room(int roomNumber) : roomNumber(roomNumber), owner(nullptr) {
+    refreshRoomInfo();
 }
 
-int Room::getRoomNumber() {
+int Room::getRoomNumber() const {
     return roomNumber;
 }
 
