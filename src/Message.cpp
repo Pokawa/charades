@@ -3,6 +3,15 @@
 //
 
 #include <Message.hpp>
+#include <sstream>
+
+std::string joinStrings(const std::vector<std::string>& container, const std::string & delimiter) {
+    std::ostringstream os;
+    std::ostream_iterator<std::string> iter (os, delimiter.data());
+    std::copy(container.begin(), container.end() - 1, iter);
+    os << *container.rbegin();
+    return os.str();
+}
 
 template<>
 std::size_t chs::messageSize(const std::string& arg) {

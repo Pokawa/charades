@@ -14,23 +14,24 @@ namespace chs{
 
     enum class MessageType {
         LOG_IN,
-        LOG_OUT
+        LOG_OUT,
+        ROOM_INFO,
     };
 
-    MessageType getMessageType(const chs::Message & message);
+    [[nodiscard]] MessageType getMessageType(const chs::Message & message);
 
-
+    [[nodiscard]] std::string joinStrings(const std::vector<std::string>& container, const std::string & delimiter);
 
     template<typename T>
-    std::size_t messageSize(const T& arg) {
+    [[nodiscard]] std::size_t messageSize(const T& arg) {
         return sizeof(arg);
     }
 
     template<>
-    std::size_t messageSize(const std::string& arg);
+    [[nodiscard]] std::size_t messageSize(const std::string& arg);
 
     template<typename T, typename ... L>
-    std::size_t messageSize(const T& arg, const L& ...leftOver) {
+    [[nodiscard]] std::size_t messageSize(const T& arg, const L& ...leftOver) {
         return messageSize(arg) + messageSize(leftOver...);
     }
 
@@ -50,7 +51,7 @@ namespace chs{
     }
 
     template<typename ... T>
-    chs::Message constructMessage(const T& ... args){
+    [[nodiscard]] chs::Message constructMessage(const T& ... args){
         auto size = messageSize(args...);
         chs::Message message(size, 0);
         serializeMessage(message.data(), args...);
@@ -58,7 +59,7 @@ namespace chs{
     }
 
     template<typename T>
-    T deserializeMessage(char *& message) {
+    [[nodiscard]] T deserializeMessage(char *& message) {
         T object;
         memcpy(&object, message, sizeof(T));
         message += sizeof(T);
@@ -66,10 +67,10 @@ namespace chs{
     }
 
     template<>
-    std::string deserializeMessage<std::string>(char *& message);
+    [[nodiscard]] std::string deserializeMessage<std::string>(char *& message);
 
     template<typename ... T>
-    std::tuple<T...> deconstructMessage(chs::Message & message) {
+    [[nodiscard]] std::tuple<T...> deconstructMessage(chs::Message & message) {
         auto ptr = message.data();
         return std::make_tuple(deserializeMessage<T>(ptr)...);
     }
