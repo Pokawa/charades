@@ -22,7 +22,7 @@ public:
     void openServer();
     bool acceptClient();
     const chs::Socket& getLastClient();
-    const chs::Socket& getWebSocket(const int &socket);
+    const chs::Socket& getSocket(const int &socket);
     std::vector<pollfd> getPollSockets();
     void closeClient(chs::Socket& client);
     void setForWrite(const chs::Socket& client);

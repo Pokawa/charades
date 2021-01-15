@@ -22,6 +22,7 @@ bool ConnectionHandler::acceptClient() {
         spdlog::error("Client acceptance failed {}", strerror(errno));
         return false;
     } else {
+        setSocketToNonBlock(clientFd);
         clientsSockets.emplace_back(clientFd, clientAddr);
         addToPoll(clientsSockets.back().getDescriptor(), POLLIN);
 
@@ -54,7 +55,11 @@ void ConnectionHandler::openServer() {
     }
 
     freeaddrinfo(resolved);
-    listen(serverSocket, 10);
+    if (listen(serverSocket, 10)) {
+        spdlog::critical("Failed to set listen on: {}", strerror(errno));
+        exit(4);
+    }
+
     addToPoll(serverSocket, POLLIN);
 
     spdlog::info("Successfully started server on port {}", this->port);
@@ -84,7 +89,7 @@ const chs::Socket& ConnectionHandler::getLastClient() {
     return clientsSockets.back();
 }
 
-const chs::Socket &ConnectionHandler::getWebSocket(const int &socket) {
+const chs::Socket &ConnectionHandler::getSocket(const int &socket) {
     auto position = std::find_if(clientsSockets.begin(), clientsSockets.end(),
                                  [&socket](const chs::Socket & sock){ return sock.getDescriptor() == socket; });
     return *position;

@@ -27,7 +27,7 @@ int main(int argc, char** argv){
 
         for (int i = 1; i < pollSockets.size(); ++i) {
             if (pollSockets[i].revents & POLLIN) {
-                auto client = connectionHandler.getWebSocket(pollSockets[i].fd);
+                auto client = connectionHandler.getSocket(pollSockets[i].fd);
                 ioHandler.receiveFrom(client);
 
                 if (ioHandler.isMessageToGet(client)) {
@@ -52,7 +52,7 @@ int main(int argc, char** argv){
             }
 
             if (pollSockets[i].revents & POLLOUT) {
-                auto client = connectionHandler.getWebSocket(pollSockets[i].fd);
+                auto client = connectionHandler.getSocket(pollSockets[i].fd);
                 ioHandler.sendTo(client);
             }
         }
