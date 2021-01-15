@@ -7,15 +7,18 @@
 
 #include <vector>
 #include <functional>
+#include <Message.hpp>
 #include "Player.hpp"
 
 class Room {
 private:
-    std::vector<std::reference_wrapper<Player>> players;
+    std::vector<Player*> players;
+    int roomNumber;
 
 public:
-    void addPlayer(Player & player);
-    void removePlayer(Player & player);
+    void addPlayer(Player* player);
+    void removePlayer(Player* player);
+    chs::Message GetRoomInfo();
 };
 
 #endif //CHARADES_ROOM_HPP

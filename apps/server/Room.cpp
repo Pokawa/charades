@@ -4,18 +4,22 @@
 
 #include "Room.hpp"
 
-void Room::addPlayer(Player &player) {
-    players.emplace_back(player);
-    player.enterRoom(*this);
+void Room::addPlayer(Player* player) {
+    players.push_back(player);
+    player->enterRoom(*this);
 }
 
-void Room::removePlayer(Player &player) {
-    auto position = std::find_if(players.begin(), players.end(),
-                 [player](const std::reference_wrapper<Player> & item){ return item.get().name == player.name; });
-    if (position != players.end()) {
-        players.erase(position);
-        player.exitRoom();
-    }
+void Room::removePlayer(Player* player) {
+    player->exitRoom();
+    players.erase(std::remove(players.begin(), players.end(), player), players.end());
+}
+
+chs::Message Room::GetRoomInfo() {
+    std::vector<std::string> playerNames;
+    auto getPlayerName = [](const Player * player){ return player->name; };
+    std::transform(players.begin(), players.end(), std::back_inserter(playerNames), getPlayerName);
+    auto joinedNames = chs::joinStrings(playerNames, ";");
+    return chs::constructMessage(chs::MessageType::ROOM_INFO, roomNumber, joinedNames);
 }
 
 
