@@ -21,7 +21,7 @@ int chs::Socket::getDescriptor() const {
     return descriptor;
 }
 
-void chs::Socket::close() const {
+void chs::Socket::close() {
     ::close(descriptor);
 }
 

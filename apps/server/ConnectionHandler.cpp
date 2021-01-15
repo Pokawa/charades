@@ -90,7 +90,7 @@ const chs::Socket &ConnectionHandler::getWebSocket(const int &socket) {
     return *position;
 }
 
-void ConnectionHandler::closeClient(const chs::Socket & client) {
+void ConnectionHandler::closeClient(chs::Socket & client) {
     auto pos = std::find_if(clientsSockets.begin(), clientsSockets.end(),
                             [&client](const chs::Socket & socket){ return client.getDescriptor() == socket.getDescriptor(); });
     if (pos != clientsSockets.end()) {

@@ -20,7 +20,7 @@ namespace chs {
         [[nodiscard]] std::string getAddress() const;
         [[nodiscard]] uint16_t getPort() const;
         [[nodiscard]] int getDescriptor() const;
-        void close() const;
+        void close();
     };
 
 }
