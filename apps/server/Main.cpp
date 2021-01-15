@@ -5,6 +5,7 @@
 #include "ConnectionHandler.hpp"
 #include "IOHandler.hpp"
 #include "PlayersHandler.hpp"
+#include "RoomsHandler.hpp"
 
 int main(int argc, char** argv){
     if(argc != 2) {
@@ -15,6 +16,7 @@ int main(int argc, char** argv){
     ConnectionHandler connectionHandler{argv[1]};
     IOHandler ioHandler{connectionHandler};
     PlayersHandler playersHandler;
+    RoomsHandler roomsHandler;
 
     while(true) {
         auto pollSockets = connectionHandler.getPollSockets();
@@ -36,12 +38,19 @@ int main(int argc, char** argv){
 
                     if (type == chs::MessageType::LOG_IN) {
                         auto [name] = chs::deconstructMessage<std::string>(message);
+
                         if (playersHandler.isNameAvailable(name)){
                             playersHandler.addPlayer(name, client);
                             spdlog::info("Connected player: {} from: {}", name, client.getAddress());
-                            auto message = chs::constructMessage("hubcio xddd");
+                            auto message = chs::constructMessage(chs::MessageType::OK_RESPOND);
                             ioHandler.putMessage(client, message);
                         }
+                    }
+
+                    if (type == chs::MessageType::GET_ROOMS_INFO) {
+                        auto roomsInfo = roomsHandler.getRoomsInfo();
+                        ioHandler.putMessages(client, roomsInfo);
+                        spdlog::info("Sent rooms info to: {}", client.getAddress());
                     }
 
                     if (type == chs::MessageType::LOG_OUT) {

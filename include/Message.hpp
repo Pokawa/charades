@@ -16,6 +16,7 @@ namespace chs{
         LOG_IN,
         LOG_OUT,
         OK_RESPOND,
+        GET_ROOMS_INFO,
         ROOM_INFO,
     };
 
