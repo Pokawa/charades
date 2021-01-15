@@ -22,4 +22,15 @@ chs::Message Room::GetRoomInfo() {
     return chs::constructMessage(chs::MessageType::ROOM_INFO, roomNumber, joinedNames);
 }
 
+Room::Room(int roomNumber) : roomNumber(roomNumber) {
+}
+
+int Room::getRoomNumber() {
+    return roomNumber;
+}
+
+void Room::setOwner(Player* player) {
+    owner = player;
+}
+
 

@@ -14,11 +14,15 @@ class Room {
 private:
     std::vector<Player*> players;
     int roomNumber;
+    Player * owner;
 
 public:
+    explicit Room(int roomNumber);
     void addPlayer(Player* player);
     void removePlayer(Player* player);
     chs::Message GetRoomInfo();
+    int getRoomNumber();
+    void setOwner(Player* player);
 };
 
 #endif //CHARADES_ROOM_HPP
