@@ -15,6 +15,7 @@ namespace chs{
     enum class MessageType {
         LOG_IN,
         LOG_OUT,
+        OK_RESPOND,
         ROOM_INFO,
     };
 
