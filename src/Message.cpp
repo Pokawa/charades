@@ -6,6 +6,10 @@
 #include <sstream>
 
 std::string chs::joinStrings(const std::vector<std::string>& container, const std::string & delimiter) {
+    if (container.empty()) {
+        return "";
+    }
+
     std::ostringstream os;
     std::ostream_iterator<std::string> iter (os, delimiter.data());
     std::copy(container.begin(), container.end() - 1, iter);

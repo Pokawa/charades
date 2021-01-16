@@ -5,7 +5,7 @@
 #include "Player.hpp"
 #include <utility>
 
-Player::Player(std::string name, const chs::Socket& webSocket) : name(std::move(name)), webSocket(webSocket){
+Player::Player(std::string name, const chs::Socket& socket) : name(std::move(name)), socket(socket){
 }
 
 void Player::enterRoom(Room & newRoom) {
@@ -14,4 +14,8 @@ void Player::enterRoom(Room & newRoom) {
 
 void Player::exitRoom() {
     currentRoom = nullptr;
+}
+
+bool Player::compareSocket(const chs::Socket & comparingSocket) const {
+    return this->socket.getDescriptor() == comparingSocket.getDescriptor();
 }

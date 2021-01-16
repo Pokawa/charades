@@ -5,8 +5,8 @@
 #include "RoomsHandler.hpp"
 
 void RoomsHandler::newRoom(Player *owner) {
-    auto newRoomNumber = rooms.back().getRoomNumber() + 10;
-    rooms.emplace_back(newRoomNumber);
+    latestRoomNumber += 10;
+    rooms.emplace_back(latestRoomNumber);
     rooms.back().addPlayer(owner);
     rooms.back().setOwner(owner);
 }
@@ -16,4 +16,9 @@ std::vector<chs::Message> RoomsHandler::getRoomsInfo() {
     auto getRoomInfo = [](const Room & room){ return room.getRoomInfo(); };
     std::transform(rooms.begin(), rooms.end(), std::back_inserter(roomsInfo), getRoomInfo);
     return roomsInfo;
+}
+
+RoomsHandler::RoomsHandler() {
+    latestRoomNumber = 1;
+    rooms.emplace_back(latestRoomNumber);
 }

@@ -18,7 +18,7 @@ bool chs::OutgoingMessageQueue::sendMessages() {
 
     while (not queue.empty() and not blocked) {
         if (not sending) {
-            currentMessage = chs::constructMessage(queue.front(), queue.front().size());
+            currentMessage = queue.front();
             queue.pop();
             sending = true;
             sentOffset = 0;

@@ -14,3 +14,9 @@ bool PlayersHandler::isNameAvailable(const std::string &name) {
                                  [&name](const Player & player){ return player.name == name; });
     return position == players.end();
 }
+
+Player &PlayersHandler::getPlayer(const chs::Socket &socket) {
+    auto position = std::find_if(players.begin(), players.end(),
+                                 [&socket](const Player & player){ return player.compareSocket(socket); });
+    return *position;
+}

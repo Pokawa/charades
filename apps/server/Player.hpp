@@ -15,12 +15,13 @@ public:
     std::string name;
 
 private:
-    chs::Socket webSocket;
+    chs::Socket socket;
     Room * currentRoom;
 
 public:
-    Player(std::string name, const chs::Socket& webSocket);
+    Player(std::string name, const chs::Socket& socket);
     void enterRoom(Room & room);
+    [[nodiscard]] bool compareSocket(const chs::Socket & comparingSocket) const;
     void exitRoom();
 };
 

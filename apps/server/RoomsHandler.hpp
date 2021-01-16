@@ -12,8 +12,10 @@
 class RoomsHandler {
 private:
     std::vector<Room> rooms;
+    int latestRoomNumber;
 
 public:
+    RoomsHandler();
     void newRoom(Player* owner);
     std::vector<chs::Message> getRoomsInfo();
 };

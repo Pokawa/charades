@@ -8,10 +8,18 @@
 #include <OutgoingMessageQueue.hpp>
 #include <Message.hpp>
 #include <spdlog/spdlog.h>
+#include <iostream>
 #include <IncomingMessageQueue.hpp>
 #include <unistd.h>
-#include "spdlog/fmt/bin_to_hex.h"
+#include <string>
 
+
+void waitForEnter(){
+    do
+    {
+        std::cout << '\n' << "Press a key to continue...";
+    } while (std::cin.get() != '\n');
+}
 
 int main(int argc, char** argv){
     if (argc != 3)
@@ -41,20 +49,48 @@ int main(int argc, char** argv){
     chs::OutgoingMessageQueue queue{webSocket};
     chs::IncomingMessageQueue inQueue{webSocket};
 
-    auto login = chs::constructMessage(chs::MessageType::LOG_IN, "hubcio");
+    auto login = chs::constructMessage(chs::MessageType::LOG_IN_REQUEST, "uzyz");
     queue.putMessage(login);
     queue.sendMessages();
 
-    sleep(2);
+    waitForEnter();
 
     inQueue.readMessages();
     auto mess = inQueue.getMessage();
-    spdlog::info("message: {}", mess);
+    if (chs::getMessageType(mess) == chs::MessageType::OK_RESPOND) {
+        spdlog::info("udane połączenie");
 
-    auto logout = chs::constructMessage(chs::MessageType::LOG_OUT);
-    queue.putMessage(logout);
-    queue.sendMessages();
+        waitForEnter();
+        auto newRoom = chs::constructMessage(chs::MessageType::NEW_ROOM_REQUEST);
+        queue.putMessage(newRoom);
+        queue.sendMessages();
 
+        waitForEnter();
+        auto roomsInfo = chs::constructMessage(chs::MessageType::ROOMS_INFO_REQUEST);
+        queue.putMessage(roomsInfo);
+        queue.sendMessages();
+
+        waitForEnter();
+        inQueue.readMessages();
+        auto info = inQueue.getMessage();
+        if (chs::getMessageType(info) == chs::MessageType::ROOM_INFO_RESPOND) {
+            auto [roomNumber, players] = chs::deconstructMessage<int, std::string>(info);
+            spdlog::info("room info: {} {}", roomNumber, players);
+        }
+
+        info = inQueue.getMessage();
+        if (chs::getMessageType(info) == chs::MessageType::ROOM_INFO_RESPOND) {
+            auto [roomNumber, players] = chs::deconstructMessage<int, std::string>(info);
+            spdlog::info("room info: {} {}", roomNumber, players);
+        }
+
+
+        waitForEnter();
+        auto logout = chs::constructMessage(chs::MessageType::LOG_OUT_REQUEST);
+        queue.putMessage(logout);
+        queue.sendMessages();
+    }
+    waitForEnter();
     return 0;
 }
 

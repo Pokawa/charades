@@ -13,11 +13,12 @@ namespace chs{
     using Message = std::string;
 
     enum class MessageType {
-        LOG_IN,
-        LOG_OUT,
+        LOG_IN_REQUEST,
+        LOG_OUT_REQUEST,
+        ROOMS_INFO_REQUEST,
+        NEW_ROOM_REQUEST,
         OK_RESPOND,
-        GET_ROOMS_INFO,
-        ROOM_INFO,
+        ROOM_INFO_RESPOND,
     };
 
     [[nodiscard]] MessageType getMessageType(const chs::Message & message);
@@ -55,8 +56,8 @@ namespace chs{
     template<typename ... T>
     [[nodiscard]] chs::Message constructMessage(const T& ... args){
         auto size = messageSize(args...);
-        chs::Message message(size, 0);
-        serializeMessage(message.data(), args...);
+        chs::Message message(size + sizeof(size), 0);
+        serializeMessage(message.data(), args..., size);
         return message;
     }
 

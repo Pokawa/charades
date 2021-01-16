@@ -18,6 +18,7 @@ private:
 
 public:
     void addPlayer(const std::string& name, const chs::Socket& webSocket);
+    Player& getPlayer(const chs::Socket & socket);
     bool isNameAvailable(const std::string& name);
 };
 
