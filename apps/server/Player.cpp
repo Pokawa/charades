@@ -19,3 +19,7 @@ void Player::exitRoom() {
 bool Player::compareSocket(const chs::Socket & comparingSocket) const {
     return this->socket.getDescriptor() == comparingSocket.getDescriptor();
 }
+
+Room &Player::getRoom() {
+    return *currentRoom;
+}

@@ -17,7 +17,10 @@ namespace chs{
         LOG_OUT_REQUEST,
         ROOMS_INFO_REQUEST,
         NEW_ROOM_REQUEST,
+        JOIN_ROOM_REQUEST,
+        QUIT_ROOM_REQUEST,
         OK_RESPOND,
+        ERROR_RESPOND,
         ROOM_INFO_RESPOND,
     };
 

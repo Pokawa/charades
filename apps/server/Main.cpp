@@ -69,6 +69,29 @@ int main(int argc, char** argv){
                     //TODO send in-room data
                 }
 
+                if (type == chs::MessageType::JOIN_ROOM_REQUEST) {
+                    auto& player = playersHandler.getPlayer(client);
+                    auto [roomNumber] = chs::deconstructMessage<int>(message);
+
+                    if (roomsHandler.roomExists(roomNumber)) {
+                        auto respondMessage = chs::constructMessage(chs::MessageType::OK_RESPOND);
+                        ioHandler.putMessage(client, respondMessage);
+                        roomsHandler.joinRoom(roomNumber, &player);
+                        spdlog::info("{}[{}] joined room {}", player.name, client.getAddress(), roomNumber);
+                        //TODO send in-room data
+                    } else {
+                        auto respondMessage = chs::constructMessage(chs::MessageType::ERROR_RESPOND);
+                        ioHandler.putMessage(client, respondMessage);
+                        spdlog::warn("{}[{}] failed to join room {}: room not found", player.name, client.getAddress(), roomNumber);
+                    }
+
+                }
+
+                if (type == chs::MessageType::QUIT_ROOM_REQUEST) {
+                    auto& player = playersHandler.getPlayer(client);
+                    player.getRoom().removePlayer(&player);
+                }
+
                 if (type == chs::MessageType::LOG_OUT_REQUEST) {
                     connectionHandler.closeClient(client);
                     spdlog::info("Log out from: {}", client.getAddress());

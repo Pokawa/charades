@@ -16,8 +16,15 @@ private:
 
 public:
     RoomsHandler();
+    void joinRoom(int roomNumber, Player* player);
+    void quitRoom(int roomNumber, Player* player);
     void newRoom(Player* owner);
     std::vector<chs::Message> getRoomsInfo();
+    Room& getRoomByNumber(int roomNumber);
+    bool roomExists(int roomNumber);
+
+private:
+    std::vector<Room>::iterator findRoomByNumber(int roomNumber);
 };
 
 

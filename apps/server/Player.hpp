@@ -22,6 +22,7 @@ public:
     Player(std::string name, const chs::Socket& socket);
     void enterRoom(Room & room);
     [[nodiscard]] bool compareSocket(const chs::Socket & comparingSocket) const;
+    Room& getRoom();
     void exitRoom();
 };
 
