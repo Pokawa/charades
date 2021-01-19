@@ -12,7 +12,8 @@
 #include <IncomingMessageQueue.hpp>
 #include <unistd.h>
 #include <string>
-
+#include <QApplication>
+#include "mainwindow.hpp"
 
 void waitForEnter(){
     do
@@ -91,6 +92,11 @@ int main(int argc, char** argv){
         queue.sendMessages();
     }
     waitForEnter();
-    return 0;
+
+
+    QApplication a(argc, argv);
+    MainWindow w;
+    w.show();
+    return a.exec();
 }
 
