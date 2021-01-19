@@ -25,6 +25,8 @@ public:
     [[nodiscard]] int getRoomNumber() const;
     void setOwner(Player* player);
 
+    int getNumberOfPlayers();
+
 private:
     void refreshRoomInfo();
 };

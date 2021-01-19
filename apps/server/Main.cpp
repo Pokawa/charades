@@ -77,18 +77,19 @@ int main(int argc, char** argv){
                         auto respondMessage = chs::constructMessage(chs::MessageType::OK_RESPOND);
                         ioHandler.putMessage(client, respondMessage);
                         roomsHandler.joinRoom(roomNumber, &player);
-                        spdlog::info("{}[{}] joined room {}", player.name, client.getAddress(), roomNumber);
+                        spdlog::info("{} joined room {}", player.name, roomNumber);
                         //TODO send in-room data
                     } else {
                         auto respondMessage = chs::constructMessage(chs::MessageType::ERROR_RESPOND);
                         ioHandler.putMessage(client, respondMessage);
-                        spdlog::warn("{}[{}] failed to join room {}: room not found", player.name, client.getAddress(), roomNumber);
+                        spdlog::warn("{} failed to join room {}: room not found", player.name, roomNumber);
                     }
 
                 }
 
                 if (type == chs::MessageType::QUIT_ROOM_REQUEST) {
                     auto& player = playersHandler.getPlayer(client);
+                    spdlog::info("Player {} quit room {}", player.name, player.getRoom().getRoomNumber());
                     player.getRoom().removePlayer(&player);
                 }
 

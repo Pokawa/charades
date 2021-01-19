@@ -40,4 +40,8 @@ void Room::setOwner(Player* player) {
     owner = player;
 }
 
+int Room::getNumberOfPlayers() {
+    return players.size();
+}
+
 
