@@ -30,7 +30,8 @@ public:
     int getInDrawingQueue(Player * player);
     void quitDrawingQueue(Player * player);
     void nextDrawer();
-    int getNumberOfPlayers();
+    [[nodiscard]] int getNumberOfPlayers();
+    [[nodiscard]] std::vector<Player*> getPlayersButOne(Player * player);
 
 private:
     void refreshRoomInfo();

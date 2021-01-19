@@ -69,4 +69,10 @@ void Room::nextDrawer() {
     }
 }
 
+std::vector<Player *> Room::getPlayersButOne(Player * player) {
+    std::vector<Player *> buffer(players.begin(), players.end());
+    buffer.erase(std::find(buffer.begin(), buffer.end(), player));
+    return buffer;
+}
+
 
