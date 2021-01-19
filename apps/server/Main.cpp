@@ -13,13 +13,13 @@ int main(int argc, char** argv){
         return 1;
     }
 
-    ConnectionHandler connectionHandler{argv[1]};
-    IOHandler ioHandler{connectionHandler};
-    PlayersHandler playersHandler;
-    RoomsHandler roomsHandler;
+    auto & connectionHandler = ConnectionHandler::getInstance(argv[1]);
+    auto & ioHandler = IOHandler::getInstance();
+    auto & playersHandler = PlayersHandler::getInstance();
+    auto & roomsHandler = RoomsHandler::getInstance();
 
     while(true) {
-        auto pollSockets = connectionHandler.getPollSockets();
+        auto pollSockets = ConnectionHandler::getInstance().getPollSockets();
         poll(pollSockets.data(), pollSockets.size(), -1);
 
         if (pollSockets[0].revents & POLLIN) {

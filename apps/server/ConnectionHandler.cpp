@@ -10,7 +10,6 @@
 #include "ConnectionHandler.hpp"
 
 ConnectionHandler::ConnectionHandler(std::string port) : port(std::move(port)), serverSocket(0){
-    openServer();
 }
 
 bool ConnectionHandler::acceptClient() {
@@ -121,6 +120,15 @@ pollfd &ConnectionHandler::getPollFd(const chs::Socket & client) {
     auto pos = std::find_if(pollSockets.begin(), pollSockets.end(),
                             [&client](const pollfd & fd){ return client.getDescriptor() == fd.fd; });
     return *pos;
+}
+
+std::unique_ptr<ConnectionHandler> ConnectionHandler::instance;
+
+ConnectionHandler &ConnectionHandler::getInstance(const std::string& port) {
+    if (instance == nullptr) {
+        instance = std::make_unique<ConnectionHandler>(port);
+    }
+    return *instance;
 }
 
 

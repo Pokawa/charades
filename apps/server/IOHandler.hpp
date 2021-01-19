@@ -15,11 +15,15 @@ class IOHandler {
 private:
     std::map<int, chs::IncomingMessageQueue> incomingQueues;
     std::map<int, chs::OutgoingMessageQueue> outgoingQueues;
-    ConnectionHandler& connectionHandler;
+
+    static std::unique_ptr<IOHandler> instance;
 
 public:
+    void operator=(const IOHandler &) = delete;
+    IOHandler(IOHandler &other) = delete;
+    IOHandler() = default;
+    static IOHandler& getInstance();
 
-    IOHandler(ConnectionHandler& connectionHandler);
     void addClient(const chs::Socket & socket);
     void removeClient(const chs::Socket & socket);
     void receiveFrom(const chs::Socket & socket);

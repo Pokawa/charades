@@ -20,3 +20,12 @@ Player &PlayersHandler::getPlayer(const chs::Socket &socket) {
                                  [&socket](const Player & player){ return player.compareSocket(socket); });
     return *position;
 }
+
+std::unique_ptr<PlayersHandler> PlayersHandler::instance;
+
+PlayersHandler &PlayersHandler::getInstance() {
+    if (instance == nullptr) {
+        instance = std::make_unique<PlayersHandler>();
+    }
+    return *instance;
+}

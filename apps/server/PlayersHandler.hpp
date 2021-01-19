@@ -16,7 +16,15 @@ class PlayersHandler {
 private:
     std::vector<Player> players;
 
+    static std::unique_ptr<PlayersHandler> instance;
+
 public:
+    void operator=(const PlayersHandler &) = delete;
+    PlayersHandler(PlayersHandler &other) = delete;
+    PlayersHandler() = default;
+    static PlayersHandler& getInstance();
+
+
     void addPlayer(const std::string& name, const chs::Socket& webSocket);
     Player& getPlayer(const chs::Socket & socket);
     bool isNameAvailable(const std::string& name);

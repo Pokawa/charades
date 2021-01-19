@@ -45,3 +45,12 @@ std::vector<Room>::iterator RoomsHandler::findRoomByNumber(int roomNumber) {
 bool RoomsHandler::roomExists(int roomNumber) {
     return findRoomByNumber(roomNumber) != rooms.end();
 }
+
+std::unique_ptr<RoomsHandler> RoomsHandler::instance;
+
+RoomsHandler &RoomsHandler::getInstance() {
+    if (instance == nullptr) {
+        instance = std::make_unique<RoomsHandler>();
+    }
+    return *instance;
+}

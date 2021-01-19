@@ -17,7 +17,13 @@ private:
     std::vector<chs::Socket> clientsSockets;
     std::vector<pollfd> pollSockets;
 
+    static std::unique_ptr<ConnectionHandler> instance;
+
 public:
+    void operator=(const ConnectionHandler &) = delete;
+    ConnectionHandler(ConnectionHandler &other) = delete;
+    static ConnectionHandler& getInstance(const std::string& port = "2000");
+
     explicit ConnectionHandler(std::string port);
     void openServer();
     bool acceptClient();

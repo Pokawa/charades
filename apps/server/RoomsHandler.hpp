@@ -14,7 +14,13 @@ private:
     std::vector<Room> rooms;
     int latestRoomNumber;
 
+    static std::unique_ptr<RoomsHandler> instance;
+
 public:
+    void operator=(const RoomsHandler &) = delete;
+    RoomsHandler(RoomsHandler &other) = delete;
+    static RoomsHandler& getInstance();
+
     RoomsHandler();
     void joinRoom(int roomNumber, Player* player);
     void quitRoom(int roomNumber, Player* player);
