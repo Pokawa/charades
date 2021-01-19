@@ -8,13 +8,16 @@
 #include <vector>
 #include <functional>
 #include <Message.hpp>
+#include <list>
 #include "Player.hpp"
 
 class Room {
 private:
-    std::vector<Player*> players;
+    std::list<Player*> players;
+    std::list<Player*> drawingQueue;
     int roomNumber;
     Player * owner;
+    Player * drawer;
     chs::Message roomInfo;
 
 public:
@@ -24,7 +27,9 @@ public:
     [[nodiscard]] chs::Message getRoomInfo() const;
     [[nodiscard]] int getRoomNumber() const;
     void setOwner(Player* player);
-
+    int getInDrawingQueue(Player * player);
+    void quitDrawingQueue(Player * player);
+    void nextDrawer();
     int getNumberOfPlayers();
 
 private:
