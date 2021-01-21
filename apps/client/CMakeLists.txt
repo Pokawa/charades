@@ -19,10 +19,10 @@ set(TS_FILES client_en_150.ts)
 
 add_executable(client
     Main.cpp
-    mainwindow.cpp
-    mainwindow.hpp
-    mainwindow.ui
-    ${TS_FILES}
+        ConnectDialog.cpp
+        ConnectDialog.h
+        ConnectDialog.ui
+        ${TS_FILES}
         )
 
 target_link_libraries(client PRIVATE Qt${QT_VERSION_MAJOR}::Widgets myLib spdlog::spdlog fmt::fmt)

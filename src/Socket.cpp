@@ -25,5 +25,8 @@ void chs::Socket::close() {
     ::close(descriptor);
 }
 
+chs::Socket::Socket() : descriptor(0), sockInfo({}){
+}
+
 
 

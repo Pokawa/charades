@@ -25,6 +25,7 @@ namespace chs {
         explicit OutgoingMessageQueue(const chs::Socket & socket);
         bool sendMessages();
         void putMessage(chs::Message);
+        bool putAndSendMessage(chs::Message);
         [[nodiscard]] bool isBlocked() const;
     };
 }

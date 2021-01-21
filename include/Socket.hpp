@@ -17,6 +17,7 @@ namespace chs {
 
     public:
         Socket(int fd, sockaddr_in sockInfo);
+        Socket();
         [[nodiscard]] std::string getAddress() const;
         [[nodiscard]] uint16_t getPort() const;
         [[nodiscard]] int getDescriptor() const;

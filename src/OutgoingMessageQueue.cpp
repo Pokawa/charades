@@ -48,3 +48,8 @@ bool chs::OutgoingMessageQueue::sendMessages() {
 bool chs::OutgoingMessageQueue::isBlocked() const {
     return blocked;
 }
+
+bool chs::OutgoingMessageQueue::putAndSendMessage(chs::Message message) {
+    putMessage(std::move(message));
+    return sendMessages();
+}
