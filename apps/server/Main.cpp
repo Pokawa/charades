@@ -14,6 +14,7 @@ int main(int argc, char** argv){
     }
 
     auto & connectionHandler = ConnectionHandler::getInstance(argv[1]);
+    connectionHandler.openServer();
     auto & ioHandler = IOHandler::getInstance();
     auto & playersHandler = PlayersHandler::getInstance();
     auto & roomsHandler = RoomsHandler::getInstance();

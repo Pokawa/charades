@@ -15,6 +15,9 @@ public:
     explicit ConnectDialog(QWidget *parent = nullptr);
     ~ConnectDialog();
 
+private slots:
+    void on_connectButton_clicked();
+
 private:
     Ui::ConnectDialog *ui;
 };
