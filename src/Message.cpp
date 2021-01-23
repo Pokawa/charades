@@ -5,16 +5,31 @@
 #include <Message.hpp>
 #include <sstream>
 
-std::string chs::joinStrings(const std::vector<std::string>& container, const std::string & delimiter) {
+std::string chs::joinStrings(const std::vector<std::string>& container, char delimiter) {
     if (container.empty()) {
         return "";
     }
 
+    std::string del{delimiter};
+
     std::ostringstream os;
-    std::ostream_iterator<std::string> iter (os, delimiter.data());
+    std::ostream_iterator<std::string> iter (os, del.data());
     std::copy(container.begin(), container.end() - 1, iter);
     os << *container.rbegin();
     return os.str();
+}
+
+std::vector<std::string> chs::explodeJoinedString(const std::string &joined, char delimiter)
+{
+    std::vector<std::string> result;
+    std::istringstream iss(joined);
+
+    for (std::string token; std::getline(iss, token, delimiter); )
+    {
+        result.push_back(std::move(token));
+    }
+
+    return result;
 }
 
 template<>

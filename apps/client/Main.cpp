@@ -4,17 +4,12 @@
 
 #include <error.h>
 #include <netdb.h>
-#include <cerrno>
-#include <OutgoingMessageQueue.hpp>
 #include <Message.hpp>
-#include <spdlog/spdlog.h>
-#include <iostream>
 #include <IncomingMessageQueue.hpp>
-#include <unistd.h>
 #include <string>
 #include <QApplication>
 #include "ConnectDialog.h"
-#include "ServerHandler.hpp"
+#include "CommunicationHandler.hpp"
 
 
 int main(int argc, char** argv){
@@ -27,12 +22,6 @@ int main(int argc, char** argv){
     ConnectDialog window;
     window.show();
 
-    auto connected = ServerHandler::getInstance().connectToHost(argv[1], std::stoi(argv[2]));
-    if (connected) {
-        auto fd = ServerHandler::getInstance().getSocketFD();
-        auto loginMessage = chs::constructMessage(chs::MessageType::LOG_IN_REQUEST, "hubcio");
-        send(fd, loginMessage.data(), loginMessage.size(), 0);
-    }
 
     return a.exec();
 }

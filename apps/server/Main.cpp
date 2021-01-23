@@ -2,6 +2,7 @@
 // Created by hubert on 26.12.2020.
 //
 #include <spdlog/spdlog.h>
+#include <fcntl.h>
 #include "ConnectionHandler.hpp"
 #include "IOHandler.hpp"
 #include "PlayersHandler.hpp"
@@ -21,7 +22,7 @@ int main(int argc, char** argv){
 
     while(true) {
         auto pollSockets = ConnectionHandler::getInstance().getPollSockets();
-        poll(pollSockets.data(), pollSockets.size(), -1);
+        auto ret = poll(pollSockets.data(), pollSockets.size(), -1);
 
         if (pollSockets[0].revents & POLLIN) {
             if (connectionHandler.acceptClient())

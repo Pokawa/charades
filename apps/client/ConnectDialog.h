@@ -2,6 +2,7 @@
 #define CONNECTDIALOG_H
 
 #include <QDialog>
+#include "CommunicationHandler.hpp"
 
 namespace Ui {
 class ConnectDialog;
@@ -11,15 +12,18 @@ class ConnectDialog : public QDialog
 {
     Q_OBJECT
 
+private:
+    Ui::ConnectDialog *ui;
+    std::shared_ptr<CommunicationHandler> communicationHandler;
+
 public:
     explicit ConnectDialog(QWidget *parent = nullptr);
-    ~ConnectDialog();
+    ~ConnectDialog() override;
 
 private slots:
     void on_connectButton_clicked();
+    void on_ConnectDialog_accepted();
 
-private:
-    Ui::ConnectDialog *ui;
 };
 
 #endif // CONNECTDIALOG_H

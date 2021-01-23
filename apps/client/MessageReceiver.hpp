@@ -13,15 +13,10 @@ class MessageReceiver : public QThread{
     Q_OBJECT
 protected:
     void run() override;
-
-    static MessageReceiver instance;
+    int socketFD;
 
 public:
-    void operator=(const MessageReceiver &) = delete;
-    MessageReceiver(MessageReceiver &other) = delete;
-    static MessageReceiver& getInstance();
-
-    MessageReceiver() = default;
+    MessageReceiver(int socketFD);
 
 signals:
     void messageReceived(const chs::Message& message);

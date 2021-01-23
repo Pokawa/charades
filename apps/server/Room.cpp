@@ -29,7 +29,7 @@ void Room::refreshRoomInfo() {
     std::vector<std::string> playerNames;
     auto getPlayerName = [](const Player * player){ return player->name; };
     std::transform(players.begin(), players.end(), std::back_inserter(playerNames), getPlayerName);
-    auto joinedNames = chs::joinStrings(playerNames, ";");
+    auto joinedNames = chs::joinStrings(playerNames, ';');
     roomInfo = chs::constructMessage(chs::MessageType::ROOM_INFO_RESPOND, roomNumber, joinedNames);
 }
 

@@ -10,7 +10,7 @@
     <x>0</x>
     <y>0</y>
     <width>390</width>
-    <height>118</height>
+    <height>142</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -22,7 +22,7 @@
      <x>9</x>
      <y>9</y>
      <width>374</width>
-     <height>94</height>
+     <height>126</height>
     </rect>
    </property>
    <layout class="QVBoxLayout" name="verticalLayout">
@@ -78,6 +78,26 @@
       </property>
       <property name="flat">
        <bool>false</bool>
+      </property>
+     </widget>
+    </item>
+    <item>
+     <widget class="Line" name="line">
+      <property name="orientation">
+       <enum>Qt::Horizontal</enum>
+      </property>
+     </widget>
+    </item>
+    <item>
+     <widget class="QLabel" name="respondLabel">
+      <property name="text">
+       <string/>
+      </property>
+      <property name="textFormat">
+       <enum>Qt::AutoText</enum>
+      </property>
+      <property name="alignment">
+       <set>Qt::AlignCenter</set>
       </property>
      </widget>
     </item>

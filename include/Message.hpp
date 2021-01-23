@@ -26,7 +26,9 @@ namespace chs{
 
     [[nodiscard]] MessageType getMessageType(const chs::Message & message);
 
-    [[nodiscard]] std::string joinStrings(const std::vector<std::string>& container, const std::string & delimiter);
+    [[nodiscard]] std::string joinStrings(const std::vector<std::string>& container, char delimiter);
+
+    [[nodiscard]] std::vector<std::string> explodeJoinedString(const std::string & joined, char delimiter);
 
     template<typename T>
     [[nodiscard]] std::size_t messageSize(const T& arg) {
