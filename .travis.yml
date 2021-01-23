@@ -6,7 +6,7 @@ compiler:
 
 before_script:
   # dependencies
-  - sudo apt-get -y install libfmt-dev libspdlog-dev
+  - sudo apt-get -y install libfmt-dev libspdlog-dev qt5-default qtmultimedia5-dev qttools5-dev-tools qttools5-dev
   # create a build folder for the out-of-source build
   - mkdir build
   # switch to build directory
