@@ -27,12 +27,14 @@ void RoomsHandler::joinRoom(int roomNumber, Player* player) {
     getRoomByNumber(roomNumber).addPlayer(player);
 }
 
-void RoomsHandler::quitRoom(int roomNumber, Player *player) {
-    auto & room = getRoomByNumber(roomNumber);
-    room.removePlayer(player);
+void RoomsHandler::quitRoom(Player *player) {
+    if (player->isInRoom()) {
+        auto& room = player->getRoom();
+        room.removePlayer(player);
 
-    if (room.getNumberOfPlayers() == 0) {
-        rooms.erase(findRoomByNumber(roomNumber));
+        if (room.getNumberOfPlayers() == 0) {
+            rooms.erase(findRoomByNumber(room.getRoomNumber()));
+        }
     }
 }
 

@@ -96,6 +96,12 @@ int main(int argc, char** argv){
                 }
 
                 if (type == chs::MessageType::LOG_OUT_REQUEST) {
+                    if (playersHandler.clientIsLoggedIn(client)) {
+                        playersHandler.removePlayer(client);
+                        auto& player = playersHandler.getPlayer(client);
+                        spdlog::info("Removed player: {}", player.name);
+                    }
+
                     connectionHandler.closeClient(client);
                     spdlog::info("Log out from: {}", client.getAddress());
                     continue;

@@ -23,3 +23,7 @@ bool Player::compareSocket(const chs::Socket & comparingSocket) const {
 Room &Player::getRoom() {
     return *currentRoom;
 }
+
+bool Player::isInRoom() {
+    return currentRoom != nullptr;
+}

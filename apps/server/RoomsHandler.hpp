@@ -23,7 +23,7 @@ public:
 
     RoomsHandler();
     void joinRoom(int roomNumber, Player* player);
-    void quitRoom(int roomNumber, Player* player);
+    void quitRoom(Player* player);
     void newRoom(Player* owner);
     std::vector<chs::Message> getRoomsInfo();
     Room& getRoomByNumber(int roomNumber);

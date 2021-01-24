@@ -23,6 +23,7 @@ public:
     void enterRoom(Room & room);
     [[nodiscard]] bool compareSocket(const chs::Socket & comparingSocket) const;
     Room& getRoom();
+    bool isInRoom();
     void exitRoom();
 };
 
