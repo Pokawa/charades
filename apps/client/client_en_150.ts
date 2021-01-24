@@ -5,26 +5,32 @@
     <name>ConnectDialog</name>
     <message>
         <location filename="ConnectDialog.ui" line="17"/>
-        <location filename="../../cmake-build-debug/apps/client/client_autogen/include/ui_ConnectDialog.h" line="109"/>
+        <location filename="../../cmake-build-debug/apps/client/client_autogen/include/ui_ConnectDialog.h" line="125"/>
         <source>Dialog</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="ConnectDialog.ui" line="50"/>
-        <location filename="../../cmake-build-debug/apps/client/client_autogen/include/ui_ConnectDialog.h" line="110"/>
+        <location filename="ConnectDialog.ui" line="34"/>
+        <location filename="../../cmake-build-debug/apps/client/client_autogen/include/ui_ConnectDialog.h" line="126"/>
         <source>Server address: </source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="ConnectDialog.ui" line="60"/>
-        <location filename="../../cmake-build-debug/apps/client/client_autogen/include/ui_ConnectDialog.h" line="111"/>
+        <location filename="ConnectDialog.ui" line="44"/>
+        <location filename="../../cmake-build-debug/apps/client/client_autogen/include/ui_ConnectDialog.h" line="127"/>
         <source>Port:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="ConnectDialog.ui" line="81"/>
-        <location filename="../../cmake-build-debug/apps/client/client_autogen/include/ui_ConnectDialog.h" line="112"/>
+        <location filename="ConnectDialog.ui" line="65"/>
+        <location filename="../../cmake-build-debug/apps/client/client_autogen/include/ui_ConnectDialog.h" line="128"/>
         <source>Username:          </source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="ConnectDialog.ui" line="77"/>
+        <location filename="../../cmake-build-debug/apps/client/client_autogen/include/ui_ConnectDialog.h" line="129"/>
+        <source>Connect</source>
         <translation type="unfinished"></translation>
     </message>
 </context>

@@ -17,7 +17,11 @@ find_package(Qt${QT_VERSION_MAJOR} COMPONENTS Widgets LinguistTools REQUIRED)
 
 set(TS_FILES client_en_150.ts)
 
-add_executable(client Main.cpp ConnectDialog.cpp ConnectDialog.h ConnectDialog.ui CommunicationHandler.cpp CommunicationHandler.hpp MessageReceiver.cpp MessageReceiver.hpp ${TS_FILES} )
+set(CHARADES_WINDOW CharadesWindow.cpp CharadesWindow.hpp CharadesWindow.ui)
+set(CONNECT_DIALOG ConnectDialog.ui ConnectDialog.h ConnectDialog.cpp)
+
+add_executable(client Main.cpp CommunicationHandler.cpp CommunicationHandler.hpp MessageReceiver.cpp MessageReceiver.hpp
+        ${CHARADES_WINDOW} ${CONNECT_DIALOG} ${TS_FILES} )
 
 target_link_libraries(client PRIVATE Qt${QT_VERSION_MAJOR}::Widgets myLib spdlog::spdlog fmt::fmt)
 

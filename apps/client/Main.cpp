@@ -19,8 +19,14 @@ int main(int argc, char** argv){
     qRegisterMetaType<chs::Message>("chs::Message");
 
     QApplication a(argc, argv);
-    ConnectDialog window;
-    window.show();
+    ConnectDialog dialog;
+    dialog.show();
+
+    //CharadesWindow window;
+    //QObject::connect(&dialog, &ConnectDialog::accepted, [&window](){
+    // auto ptr = dialog.getCommunicationHandler();
+    // window.setCommunicationHandler(std::move(ptr));
+    // });
 
 
     return a.exec();

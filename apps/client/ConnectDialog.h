@@ -14,11 +14,12 @@ class ConnectDialog : public QDialog
 
 private:
     Ui::ConnectDialog *ui;
-    std::shared_ptr<CommunicationHandler> communicationHandler;
+    std::unique_ptr<CommunicationHandler> communicationHandler;
 
 public:
     explicit ConnectDialog(QWidget *parent = nullptr);
     ~ConnectDialog() override;
+    std::unique_ptr<CommunicationHandler> getCommunicationHandler();
 
 private slots:
     void on_connectButton_clicked();

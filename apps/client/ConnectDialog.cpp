@@ -33,7 +33,7 @@ void ConnectDialog::on_connectButton_clicked()
         return;
     }
 
-    communicationHandler = std::make_shared<CommunicationHandler>(ret);
+    communicationHandler = std::make_unique<CommunicationHandler>(ret);
     connect(communicationHandler.get(), &CommunicationHandler::loginSuccessful, this, &ConnectDialog::accept);
     connect(communicationHandler.get(), &CommunicationHandler::loginFailed, [this](){ this->ui->respondLabel->setText("Login failed, username in use"); });
 
@@ -51,4 +51,8 @@ void ConnectDialog::on_ConnectDialog_accepted() {
     auto username = ui->usernameInput->text().toStdString();
     spdlog::info("login accepted as {}", username);
     //TODO open main window
+}
+
+std::unique_ptr<CommunicationHandler> ConnectDialog::getCommunicationHandler() {
+    return std::move(communicationHandler);
 }
