@@ -19,9 +19,10 @@ set(TS_FILES client_en_150.ts)
 
 set(CHARADES_WINDOW CharadesWindow.cpp CharadesWindow.hpp CharadesWindow.ui)
 set(CONNECT_DIALOG ConnectDialog.ui ConnectDialog.h ConnectDialog.cpp)
+set(DRAW_WIDGET DrawWidget.cpp DrawWidget.hpp)
 
 add_executable(client Main.cpp CommunicationHandler.cpp CommunicationHandler.hpp MessageReceiver.cpp MessageReceiver.hpp
-        ${CHARADES_WINDOW} ${CONNECT_DIALOG} ${TS_FILES} App.cpp App.hpp)
+        ${CHARADES_WINDOW} ${CONNECT_DIALOG} ${TS_FILES} ${DRAW_WIDGET} App.cpp App.hpp)
 
 target_link_libraries(client PRIVATE Qt${QT_VERSION_MAJOR}::Widgets myLib spdlog::spdlog fmt::fmt)
 

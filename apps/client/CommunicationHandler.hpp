@@ -30,6 +30,8 @@ public:
     //REQUESTS
     void logInRequest(const std::string& username);
     void roomsInfoRequest();
+    void joinRoomRequest(int roomNumber);
+    void newRoomRequest();
 
 
 public slots:
@@ -39,6 +41,8 @@ signals:
     void loginSuccessful();
     void loginFailed();
     void roomsInfoRespond(int roomNumber, std::string joinedNames);
+    void joinedRoom();
+    void joiningRoomFailed();
 
 };
 

@@ -99,3 +99,15 @@ void CommunicationHandler::roomsInfoRequest() {
     lastRequest = chs::MessageType::ROOMS_INFO_REQUEST;
     sendMessage(roomsInfoMessage);
 }
+
+void CommunicationHandler::joinRoomRequest(int roomNumber) {
+    auto joinRoomRequest = chs::constructMessage(chs::MessageType::JOIN_ROOM_REQUEST, roomNumber);
+    lastRequest = chs::MessageType::JOIN_ROOM_REQUEST;
+    sendMessage(joinRoomRequest);
+}
+
+void CommunicationHandler::newRoomRequest() {
+    auto newRoomRequest = chs::constructMessage(chs::MessageType::NEW_ROOM_REQUEST);
+    lastRequest = chs::MessageType::NEW_ROOM_REQUEST;
+    sendMessage(newRoomRequest);
+}

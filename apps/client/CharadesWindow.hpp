@@ -2,6 +2,7 @@
 #define CHARADESWINDOW_HPP
 
 #include <QMainWindow>
+#include <QListWidgetItem>
 #include "CommunicationHandler.hpp"
 
 namespace Ui {
@@ -20,11 +21,16 @@ public:
     ~CharadesWindow();
 
 private slots:
-    void on_joinButton_clicked();
     void on_newRoomButton_clicked();
     void roomsInfoRespond(int roomNumber, std::string joinedNames);
-
     void on_refreshButton_clicked();
+    void on_roomsList_itemDoubleClicked(QListWidgetItem *item);
+    void on_colorButton_clicked();
+    void on_chatInput_editingFinished();
+    void on_exitButton_clicked();
+    void on_startButton_clicked();
+
+    void on_clearButton_clicked();
 
 private:
     Ui::CharadesWindow *ui;
