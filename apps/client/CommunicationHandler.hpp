@@ -40,8 +40,9 @@ public slots:
 signals:
     void loginSuccessful();
     void loginFailed();
-    void roomsInfoRespond(int roomNumber, std::string joinedNames);
+    void roomsInfoRespond(chs::Message message);
     void joinedRoom();
+    void inGameInfoRespond(chs::Message message);
     void joiningRoomFailed();
 
 };

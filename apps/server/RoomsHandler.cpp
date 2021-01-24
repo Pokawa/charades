@@ -6,9 +6,7 @@
 
 void RoomsHandler::newRoom(Player *owner) {
     latestRoomNumber += 10;
-    rooms.emplace_back(latestRoomNumber);
-    rooms.back().addPlayer(owner);
-    rooms.back().setOwner(owner);
+    rooms.emplace_back(latestRoomNumber, owner);
 }
 
 std::vector<chs::Message> RoomsHandler::getRoomsInfo() {

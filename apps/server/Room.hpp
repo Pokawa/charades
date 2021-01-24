@@ -18,13 +18,16 @@ private:
     int roomNumber;
     Player * owner;
     Player * drawer;
-    chs::Message roomInfo;
+    bool gameIsActive;
+    std::chrono::time_point<std::chrono::system_clock> roundStartTimePoint;
 
 public:
     explicit Room(int roomNumber);
+    Room(int roomNumber, Player * owner);
     void addPlayer(Player* player);
     void removePlayer(Player* player);
     [[nodiscard]] chs::Message getRoomInfo() const;
+    [[nodiscard]] chs::Message getInGameInfo() const;
     [[nodiscard]] int getRoomNumber() const;
     void setOwner(Player* player);
     int getInDrawingQueue(Player * player);
@@ -32,9 +35,13 @@ public:
     void nextDrawer();
     [[nodiscard]] int getNumberOfPlayers();
     [[nodiscard]] std::vector<Player*> getPlayersButOne(Player * player);
+    [[nodiscard]] std::vector<Player *> getPlayers();
+
 
 private:
-    void refreshRoomInfo();
+    [[nodiscard]] std::string getJoinedPLayerNames() const;
+    [[nodiscard]] std::string getJoinedPlayerScores() const;
+
 };
 
 #endif //CHARADES_ROOM_HPP

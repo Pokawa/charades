@@ -5,7 +5,7 @@
 #include "Player.hpp"
 #include <utility>
 
-Player::Player(std::string name, const chs::Socket& socket) : name(std::move(name)), socket(socket){
+Player::Player(std::string name, const chs::Socket& socket) : name(std::move(name)), socket(socket), score(0), currentRoom(nullptr) {
 }
 
 void Player::enterRoom(Room & newRoom) {
@@ -26,4 +26,20 @@ Room &Player::getRoom() {
 
 bool Player::isInRoom() {
     return currentRoom != nullptr;
+}
+
+void Player::setScore(int newScore) {
+    score = newScore;
+}
+
+void Player::addScore(int increment) {
+    score += increment;
+}
+
+int Player::getScore() const {
+    return score;
+}
+
+chs::Socket Player::getSocket() {
+    return socket;
 }

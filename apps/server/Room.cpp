@@ -7,7 +7,6 @@
 void Room::addPlayer(Player* player) {
     players.push_back(player);
     player->enterRoom(*this);
-    refreshRoomInfo();
 }
 
 void Room::removePlayer(Player* player) {
@@ -17,24 +16,24 @@ void Room::removePlayer(Player* player) {
     if (player == owner and not players.empty()) {
         setOwner(players.front());
     }
-
-    refreshRoomInfo();
 }
 
 chs::Message Room::getRoomInfo() const {
-    return roomInfo;
+    auto joinedNames = getJoinedPLayerNames();
+    return chs::constructMessage(chs::MessageType::ROOM_INFO_RESPOND, roomNumber, joinedNames);
 }
 
-void Room::refreshRoomInfo() {
-    std::vector<std::string> playerNames;
-    auto getPlayerName = [](const Player * player){ return player->name; };
-    std::transform(players.begin(), players.end(), std::back_inserter(playerNames), getPlayerName);
-    auto joinedNames = chs::joinStrings(playerNames, ';');
-    roomInfo = chs::constructMessage(chs::MessageType::ROOM_INFO_RESPOND, roomNumber, joinedNames);
+chs::Message Room::getInGameInfo() const {
+    auto joinedNames = getJoinedPLayerNames();
+    auto joinedScores = getJoinedPlayerScores();
+    return chs::constructMessage(chs::MessageType::IN_GAME_INFO_RESPOND, owner->name, joinedNames, joinedScores, gameIsActive, roundStartTimePoint, drawer->name);
 }
 
-Room::Room(int roomNumber) : roomNumber(roomNumber), owner(nullptr), drawer(nullptr) {
-    refreshRoomInfo();
+Room::Room(int roomNumber) : Room(roomNumber, nullptr) {
+}
+
+Room::Room(int roomNumber, Player* owner) : roomNumber(roomNumber), owner(owner), drawer(owner), gameIsActive(false), roundStartTimePoint() {
+    addPlayer(owner);
 }
 
 int Room::getRoomNumber() const {
@@ -73,6 +72,25 @@ std::vector<Player *> Room::getPlayersButOne(Player * player) {
     std::vector<Player *> buffer(players.begin(), players.end());
     buffer.erase(std::find(buffer.begin(), buffer.end(), player));
     return buffer;
+}
+
+std::vector<Player *> Room::getPlayers() {
+    std::vector<Player *> vec(players.begin(), players.end());
+    return vec;
+}
+
+std::string Room::getJoinedPLayerNames() const {
+    std::vector<std::string> playerNames;
+    auto getPlayerName = [](const Player * player){ return player->name; };
+    std::transform(players.begin(), players.end(), std::back_inserter(playerNames), getPlayerName);
+    return chs::joinStrings(playerNames, ';');
+}
+
+std::string Room::getJoinedPlayerScores() const {
+    std::vector<std::string> playerScores;
+    auto getPlayerScore = [](const Player * player){ return std::to_string(player->getScore()); };
+    std::transform(players.begin(), players.end(), std::back_inserter(playerScores), getPlayerScore);
+    return chs::joinStrings(playerScores, ';');
 }
 
 

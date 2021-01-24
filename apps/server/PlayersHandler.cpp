@@ -31,7 +31,6 @@ PlayersHandler &PlayersHandler::getInstance() {
 
 void PlayersHandler::removePlayer(const chs::Socket & socket) {
     auto position = getPlayerPosition(socket);
-    RoomsHandler::getInstance().quitRoom(position.base());
     players.erase(position);
 }
 

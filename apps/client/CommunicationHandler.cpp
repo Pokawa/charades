@@ -58,8 +58,14 @@ void CommunicationHandler::handleMessage(chs::Message message) {
             }
             break;
         case chs::MessageType::ROOM_INFO_RESPOND: {
-            auto[roomNumber, joinedNames] = chs::deconstructMessage<int, std::string>(message);
-            emit roomsInfoRespond(roomNumber, joinedNames);
+            emit roomsInfoRespond(message);
+        }
+            break;
+        case chs::MessageType::IN_GAME_INFO_RESPOND: {
+            if (lastRequest == chs::MessageType::NEW_ROOM_REQUEST or lastRequest == chs::MessageType::JOIN_ROOM_REQUEST) {
+                emit joinedRoom();
+            }
+            emit inGameInfoRespond(message);
         }
             break;
         default:

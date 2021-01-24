@@ -20,6 +20,13 @@ int main(int argc, char** argv){
     auto & playersHandler = PlayersHandler::getInstance();
     auto & roomsHandler = RoomsHandler::getInstance();
 
+    auto sendInGameInfoToRoomMembers = [&ioHandler](Room & room){
+        auto inGameInfoMessage = room.getInGameInfo();
+        for (auto playerItem : room.getPlayers()) {
+            ioHandler.putMessage(playerItem->getSocket(), inGameInfoMessage);
+        }
+    };
+
     while(true) {
         auto pollSockets = ConnectionHandler::getInstance().getPollSockets();
         auto ret = poll(pollSockets.data(), pollSockets.size(), -1);
@@ -72,7 +79,8 @@ int main(int argc, char** argv){
                     auto& player = playersHandler.getPlayer(client);
                     roomsHandler.newRoom(&player);
                     spdlog::info("Created new room for: {}[{}]", player.name, client.getAddress());
-                    //TODO send in-room data
+
+                    sendInGameInfoToRoomMembers(player.getRoom());
                 }
 
                 if (type == chs::MessageType::JOIN_ROOM_REQUEST) {
@@ -84,7 +92,8 @@ int main(int argc, char** argv){
                         ioHandler.putMessage(client, respondMessage);
                         roomsHandler.joinRoom(roomNumber, &player);
                         spdlog::info("{} joined room {}", player.name, roomNumber);
-                        //TODO send in-room data
+
+                        sendInGameInfoToRoomMembers(player.getRoom());
                     } else {
                         auto respondMessage = chs::constructMessage(chs::MessageType::ERROR_RESPOND);
                         ioHandler.putMessage(client, respondMessage);
@@ -96,13 +105,22 @@ int main(int argc, char** argv){
                 if (type == chs::MessageType::QUIT_ROOM_REQUEST) {
                     auto& player = playersHandler.getPlayer(client);
                     spdlog::info("Player {} quit room {}", player.name, player.getRoom().getRoomNumber());
-                    player.getRoom().removePlayer(&player);
+                    auto& room = player.getRoom();
+                    room.removePlayer(&player);
+                    sendInGameInfoToRoomMembers(room);
                 }
 
                 if (type == chs::MessageType::LOG_OUT_REQUEST) {
                     if (playersHandler.clientIsLoggedIn(client)) {
-                        playersHandler.removePlayer(client);
                         auto& player = playersHandler.getPlayer(client);
+
+                        if (player.isInRoom()) {
+                            auto& room = player.getRoom();
+                            room.removePlayer(&player);
+                            sendInGameInfoToRoomMembers(room);
+                        }
+
+                        playersHandler.removePlayer(client);
                         spdlog::info("Removed player: {}", player.name);
                     }
 

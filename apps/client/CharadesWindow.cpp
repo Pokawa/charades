@@ -36,7 +36,8 @@ CharadesWindow::CharadesWindow(std::unique_ptr<CommunicationHandler> ptr) : Char
     emit ui->refreshButton->clicked();
 }
 
-void CharadesWindow::roomsInfoRespond(int roomNumber, std::string joinedNames) {
+void CharadesWindow::roomsInfoRespond(chs::Message message) {
+    auto[roomNumber, joinedNames] = chs::deconstructMessage<int, std::string>(message);
     std::replace(joinedNames.begin(), joinedNames.end(), ';', ' ');
     auto itemString = fmt::format("Room {} Players: {}", roomNumber, joinedNames);
     ui->roomsList->addItem(QString::fromStdString(itemString));

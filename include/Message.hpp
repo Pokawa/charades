@@ -22,6 +22,7 @@ namespace chs{
         OK_RESPOND,
         ERROR_RESPOND,
         ROOM_INFO_RESPOND,
+        IN_GAME_INFO_RESPOND,
     };
 
     [[nodiscard]] MessageType getMessageType(const chs::Message & message);

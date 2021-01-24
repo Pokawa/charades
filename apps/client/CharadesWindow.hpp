@@ -22,7 +22,7 @@ public:
 
 private slots:
     void on_newRoomButton_clicked();
-    void roomsInfoRespond(int roomNumber, std::string joinedNames);
+    void roomsInfoRespond(chs::Message message);
     void on_refreshButton_clicked();
     void on_roomsList_itemDoubleClicked(QListWidgetItem *item);
     void on_colorButton_clicked();
