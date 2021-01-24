@@ -52,8 +52,12 @@ int main(int argc, char** argv){
 
                     if (playersHandler.isNameAvailable(name)){
                         playersHandler.addPlayer(name, client);
-                        spdlog::info("Connected player: {} from: {}", name, client.getAddress());
+                        spdlog::info("Logged in player: {} from: {}", name, client.getAddress());
                         auto respondMessage = chs::constructMessage(chs::MessageType::OK_RESPOND);
+                        ioHandler.putMessage(client, respondMessage);
+                    } else {
+                        spdlog::info("Refused player: {} from: {}; Name in use", name, client.getAddress());
+                        auto respondMessage = chs::constructMessage(chs::MessageType::ERROR_RESPOND);
                         ioHandler.putMessage(client, respondMessage);
                     }
                 }

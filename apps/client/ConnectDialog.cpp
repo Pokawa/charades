@@ -50,7 +50,6 @@ void ConnectDialog::on_connectButton_clicked()
 void ConnectDialog::on_ConnectDialog_accepted() {
     auto username = ui->usernameInput->text().toStdString();
     spdlog::info("login accepted as {}", username);
-    //TODO open main window
 }
 
 std::unique_ptr<CommunicationHandler> ConnectDialog::getCommunicationHandler() {

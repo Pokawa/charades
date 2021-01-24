@@ -59,8 +59,7 @@ void CommunicationHandler::handleMessage(chs::Message message) {
             break;
         case chs::MessageType::ROOM_INFO_RESPOND: {
             auto[roomNumber, joinedNames] = chs::deconstructMessage<int, std::string>(message);
-            auto names = chs::explodeJoinedString(joinedNames, ';');
-            emit roomsInfoRespond(roomNumber, names);
+            emit roomsInfoRespond(roomNumber, joinedNames);
         }
             break;
         default:

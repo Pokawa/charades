@@ -20,15 +20,17 @@ class CommunicationHandler : public QObject {
 
 public:
     explicit CommunicationHandler(int socketFD);
-    ~CommunicationHandler();
+    ~CommunicationHandler() override;
     [[nodiscard]] int getSocketFD() const;
     void disconnectFromHost();
     void stopMessageReceiver();
     static int connectToHost(const std::string& host, int port);
     void sendMessage(const chs::Message& message);
 
+    //REQUESTS
     void logInRequest(const std::string& username);
     void roomsInfoRequest();
+
 
 public slots:
     void handleMessage(chs::Message message);
@@ -36,7 +38,7 @@ public slots:
 signals:
     void loginSuccessful();
     void loginFailed();
-    void roomsInfoRespond(int roomNumber, const std::vector<std::string>& names);
+    void roomsInfoRespond(int roomNumber, std::string joinedNames);
 
 };
 
