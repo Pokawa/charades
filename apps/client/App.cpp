@@ -14,7 +14,8 @@ void App::loginAndStart() {
 
 void App::openCharadesWindow() {
     auto ptr = connectDialog->getCommunicationHandler();
-    charadesWindow = std::make_unique<CharadesWindow>(std::move(ptr));
+    auto username = connectDialog->getUserName();
+    charadesWindow = std::make_unique<CharadesWindow>(std::move(ptr), username);
 
     charadesWindow->show();
     connectDialog->setWindowState(Qt::WindowState::WindowActive);

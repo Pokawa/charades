@@ -55,3 +55,7 @@ void ConnectDialog::on_ConnectDialog_accepted() {
 std::unique_ptr<CommunicationHandler> ConnectDialog::getCommunicationHandler() {
     return std::move(communicationHandler);
 }
+
+std::string ConnectDialog::getUserName() {
+    return ui->usernameInput->text().toStdString();
+}

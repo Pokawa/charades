@@ -16,14 +16,7 @@ std::vector<chs::Message> RoomsHandler::getRoomsInfo() {
     return roomsInfo;
 }
 
-RoomsHandler::RoomsHandler() {
-    latestRoomNumber = 1;
-    rooms.emplace_back(latestRoomNumber);
-    //temp
-    latestRoomNumber += 10;
-    rooms.emplace_back(latestRoomNumber);
-
-}
+RoomsHandler::RoomsHandler() = default;
 
 void RoomsHandler::joinRoom(int roomNumber, Player* player) {
     getRoomByNumber(roomNumber).addPlayer(player);

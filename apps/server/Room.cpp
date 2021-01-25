@@ -26,10 +26,8 @@ chs::Message Room::getRoomInfo() const {
 chs::Message Room::getInGameInfo() const {
     auto joinedNames = getJoinedPLayerNames();
     auto joinedScores = getJoinedPlayerScores();
-    return chs::constructMessage(chs::MessageType::IN_GAME_INFO_RESPOND, owner->name, joinedNames, joinedScores, gameIsActive, roundStartTimePoint, drawer->name);
-}
-
-Room::Room(int roomNumber) : Room(roomNumber, nullptr) {
+    auto wordCount = 5;
+    return chs::constructMessage(chs::MessageType::IN_GAME_INFO_RESPOND, owner->name, joinedNames, joinedScores, gameIsActive, roundStartTimePoint, drawer->name, wordCount);
 }
 
 Room::Room(int roomNumber, Player* owner) : roomNumber(roomNumber), owner(owner), drawer(owner), gameIsActive(false), roundStartTimePoint() {

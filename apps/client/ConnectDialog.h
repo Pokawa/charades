@@ -20,6 +20,7 @@ public:
     explicit ConnectDialog(QWidget *parent = nullptr);
     ~ConnectDialog() override;
     std::unique_ptr<CommunicationHandler> getCommunicationHandler();
+    std::string getUserName();
 
 private slots:
     void on_connectButton_clicked();
