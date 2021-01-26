@@ -40,6 +40,6 @@ int Player::getScore() const {
     return score;
 }
 
-chs::Socket Player::getSocket() {
+chs::Socket Player::getSocket() const {
     return socket;
 }

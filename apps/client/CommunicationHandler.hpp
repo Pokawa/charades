@@ -16,7 +16,7 @@ class CommunicationHandler : public QObject {
 
     int socketFD;
     MessageReceiver asyncMessageReceiver;
-    chs::MessageType lastRequest;
+    chs::MessageType lastRequestToConfirm;
 
 public:
     explicit CommunicationHandler(int socketFD);
@@ -25,17 +25,24 @@ public:
     void disconnectFromHost();
     void stopMessageReceiver();
     static int connectToHost(const std::string& host, int port);
+
+private:
     void sendMessage(const chs::Message& message);
-
-    //REQUESTS
-    void logInRequest(const std::string& username);
-    void roomsInfoRequest();
-    void joinRoomRequest(int roomNumber);
-    void newRoomRequest();
-
+    void sendRequest(chs::MessageType request);
 
 public slots:
     void handleMessage(chs::Message message);
+    void drawLineRequest(QPoint pt1, QPoint pt2, const QColor& color);
+    void logInRequest(const std::string& username);
+    void roomsInfoRequest();
+    void joinRoomRequest(int roomNumber);
+    void exitRoomRequest();
+    void newRoomRequest();
+    void startGameRequest();
+    void enterDrawingQueueRequest();
+    void leaveDrawingQueueRequest();
+    void sendChatMessageRequest(const std::string& message);
+    void clearRequest();
 
 signals:
     void loginSuccessful();
@@ -44,6 +51,10 @@ signals:
     void joinedRoom();
     void inGameInfoRespond(chs::Message message);
     void joiningRoomFailed();
+    void linePainted(QPoint pt1, QPoint pt2, QColor color);
+    void drawingCleared();
+    void receivedChatMessage(const std::string& message);
+    void receivedServerMessage(const std::string& message);
 
 };
 

@@ -12,9 +12,18 @@ void Room::addPlayer(Player* player) {
 void Room::removePlayer(Player* player) {
     player->exitRoom();
     players.erase(std::remove(players.begin(), players.end(), player), players.end());
+    drawingQueue.erase(std::remove(drawingQueue.begin(), drawingQueue.end(), player), drawingQueue.end());
 
     if (player == owner and not players.empty()) {
         setOwner(players.front());
+    }
+
+    if (player == drawer) {
+        if (drawingQueue.empty()) {
+            drawer = owner;
+        } else {
+            nextDrawer();
+        }
     }
 }
 
@@ -26,11 +35,10 @@ chs::Message Room::getRoomInfo() const {
 chs::Message Room::getInGameInfo() const {
     auto joinedNames = getJoinedPLayerNames();
     auto joinedScores = getJoinedPlayerScores();
-    auto wordCount = 5;
     return chs::constructMessage(chs::MessageType::IN_GAME_INFO_RESPOND, owner->name, joinedNames, joinedScores, gameIsActive, roundStartTimePoint, drawer->name, wordCount);
 }
 
-Room::Room(int roomNumber, Player* owner) : roomNumber(roomNumber), owner(owner), drawer(owner), gameIsActive(false), roundStartTimePoint() {
+Room::Room(int roomNumber, Player* owner) : roomNumber(roomNumber), owner(owner), drawer(owner), gameIsActive(false), roundStartTimePoint(), wordCount(0) {
     addPlayer(owner);
 }
 
@@ -89,6 +97,22 @@ std::string Room::getJoinedPlayerScores() const {
     auto getPlayerScore = [](const Player * player){ return std::to_string(player->getScore()); };
     std::transform(players.begin(), players.end(), std::back_inserter(playerScores), getPlayerScore);
     return chs::joinStrings(playerScores, ';');
+}
+
+void Room::startGame() {
+    roundStartTimePoint = std::chrono::system_clock::now();
+    gameIsActive = true;
+    charadesWord = "temp"; //TODO random word;
+    wordCount = static_cast<int>(std::count(charadesWord.begin(), charadesWord.end(), ' ')) + 1;
+    nextDrawer();
+}
+
+Player *Room::getDrawer() {
+    return drawer;
+}
+
+std::string Room::getCharadesWordMessage() {
+    return chs::constructMessage(chs::MessageType::CHARADES_WORD_RESPOND, charadesWord);
 }
 
 

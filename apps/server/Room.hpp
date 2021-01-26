@@ -18,11 +18,12 @@ private:
     int roomNumber;
     Player * owner;
     Player * drawer;
+    std::string charadesWord;
+    int wordCount;
     bool gameIsActive;
     std::chrono::time_point<std::chrono::system_clock> roundStartTimePoint;
 
 public:
-    explicit Room(int roomNumber);
     Room(int roomNumber, Player * owner);
     void addPlayer(Player* player);
     void removePlayer(Player* player);
@@ -36,6 +37,10 @@ public:
     [[nodiscard]] int getNumberOfPlayers();
     [[nodiscard]] std::vector<Player*> getPlayersButOne(Player * player);
     [[nodiscard]] std::vector<Player *> getPlayers();
+    void startGame();
+    Player* getDrawer();
+    std::string getCharadesWordMessage();
+
 
 
 private:

@@ -60,3 +60,11 @@ chs::MessageType chs::getMessageType(const chs::Message & message) {
     memcpy(&type, addr, sizeof(type));
     return type;
 }
+
+chs::Message chs::addSizeToMessage(const chs::Message & message) {
+    auto messageSize = message.size();
+    chs::Message newMessage( messageSize + sizeof(messageSize), 0);
+    memcpy(newMessage.data(), &messageSize, sizeof(messageSize));
+    memcpy(newMessage.data() + sizeof(messageSize), message.data(), messageSize);
+    return newMessage;
+}

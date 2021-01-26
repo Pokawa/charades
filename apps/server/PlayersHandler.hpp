@@ -6,7 +6,7 @@
 #define CHARADES_PLAYERSHANDLER_HPP
 
 #include <Socket.hpp>
-#include <vector>
+#include <list>
 #include <memory>
 #include <poll.h>
 #include "ConnectionHandler.hpp"
@@ -14,7 +14,7 @@
 
 class PlayersHandler {
 private:
-    std::vector<Player> players;
+    std::list<Player> players;
 
     static std::unique_ptr<PlayersHandler> instance;
 
@@ -32,7 +32,7 @@ public:
     bool isNameAvailable(const std::string& name);
 
 private:
-    std::vector<Player>::iterator getPlayerPosition(const chs::Socket & socket);
+    std::list<Player>::iterator getPlayerPosition(const chs::Socket & socket);
 };
 
 

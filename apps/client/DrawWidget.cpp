@@ -26,7 +26,7 @@ void DrawWidget::drawPixel(QPoint pt){
     canvas.setPixel(pt.x(), pt.y(), value);
 }
 
-void DrawWidget::drawLine(QPoint pt1, QPoint pt2) {
+void DrawWidget::drawLineCurrentColor(QPoint pt1, QPoint pt2) {
     drawLine(pt1, pt2, drawingColor);
 }
 
@@ -49,8 +49,8 @@ void DrawWidget::drawLine(QPoint pt1, QPoint pt2, QColor color) {
 
 void DrawWidget::drawLineTo(QPoint pt)
 {
-    drawLine(lastPoint, pt);
-    emit paintingLine(lastPoint, pt, drawingColor);
+    drawLineCurrentColor(lastPoint, pt);
+    emit linePainted(lastPoint, pt, drawingColor);
     lastPoint = pt;
 }
 

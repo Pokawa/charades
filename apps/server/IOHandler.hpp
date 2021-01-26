@@ -10,6 +10,7 @@
 #include <IncomingMessageQueue.hpp>
 #include <OutgoingMessageQueue.hpp>
 #include "ConnectionHandler.hpp"
+#include "Player.hpp"
 
 class IOHandler {
 private:
@@ -29,6 +30,7 @@ public:
     void receiveFrom(const chs::Socket & socket);
     void sendTo(const chs::Socket & socket);
     void putMessage(const chs::Socket & socket, const chs::Message & message);
+    void putMessage(const std::vector<Player*>& players, const chs::Message & message);
     void putMessages(const chs::Socket & socket, std::vector<chs::Message> & messages);
     bool isMessageToGet(const chs::Socket & socket);
     chs::Message getMessage(const chs::Socket & socket);

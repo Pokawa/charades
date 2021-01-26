@@ -35,15 +35,18 @@ CharadesWindow::CharadesWindow(std::unique_ptr<CommunicationHandler> ptr, std::s
     connect(communicationHandler.get(), &CommunicationHandler::roomsInfoRespond, this, &CharadesWindow::roomsInfoRespond);
     connect(communicationHandler.get(), &CommunicationHandler::joinedRoom, this, &CharadesWindow::joinedRoom);
     connect(communicationHandler.get(), &CommunicationHandler::inGameInfoRespond, this, &CharadesWindow::handleInGameInfoRespond);
+    connect(ui->drawWidget, &DrawWidget::linePainted, communicationHandler.get(), &CommunicationHandler::drawLineRequest);
+    connect(communicationHandler.get(), &CommunicationHandler::linePainted, ui->drawWidget, &DrawWidget::drawLine);
+    connect(communicationHandler.get(), &CommunicationHandler::drawingCleared, ui->drawWidget, &DrawWidget::clear);
+    connect(communicationHandler.get(), &CommunicationHandler::receivedChatMessage, this, &CharadesWindow::printChatMessage);
+    connect(communicationHandler.get(), &CommunicationHandler::receivedServerMessage, this, &CharadesWindow::printServerMessage);
+
     connect(communicationHandler.get(), &CommunicationHandler::joiningRoomFailed,
             [this](){this->ui->roomsRespondLabel->setText("Joining failed, room doesn't exist"); });
 
     emit ui->refreshButton->clicked();
 
-    ui->colorButton->setDisabled(true);
-    ui->clearButton->setDisabled(true);
-    ui->drawWidget->setDisabled(true);
-    ui->chatInput->setDisabled(true);
+    disableRoomControls();
 }
 
 void CharadesWindow::roomsInfoRespond(chs::Message message) {
@@ -68,28 +71,36 @@ void CharadesWindow::on_colorButton_clicked()
 
 void CharadesWindow::on_chatInput_editingFinished()
 {
-    spdlog::info("editing finished!");
+    communicationHandler->sendChatMessageRequest(ui->chatInput->text().toStdString());
 }
 
 void CharadesWindow::on_exitButton_clicked()
 {
-
+    communicationHandler->exitRoomRequest();
+    ui->stackedWidget->setCurrentIndex(0);
+    emit ui->refreshButton->clicked();
 }
 
 void CharadesWindow::on_startButton_clicked()
 {
-
+    communicationHandler->startGameRequest();
 }
 
 void CharadesWindow::on_clearButton_clicked()
 {
     ui->drawWidget->clear();
-    //todo send clear message
+    communicationHandler->clearRequest();
 }
 
-void CharadesWindow::on_drawingCheckbox_stateChanged(int arg1)
+void CharadesWindow::on_drawingCheckbox_stateChanged(int state)
 {
+    if (state == Qt::Checked) {
+        communicationHandler->enterDrawingQueueRequest();
+    }
 
+    if (state == Qt::Unchecked) {
+        communicationHandler->leaveDrawingQueueRequest();
+    }
 }
 
 void CharadesWindow::joinedRoom() {
@@ -100,6 +111,8 @@ void CharadesWindow::handleInGameInfoRespond(chs::Message message) {
     auto [owner, joinedNames, joinedScores, gameIsActive, startPoint, drawer, wordCount] =
             chs::deconstructMessage<std::string, std::string, std::string, bool, std::chrono::time_point<std::chrono::system_clock>, std::string, int>(message);
 
+    spdlog::info("owner: {} drawer: {}", owner, drawer);
+
     if (gameIsActive and gameState != GameState::PLAYING) {
         roundStartingPoint = startPoint;
 
@@ -108,10 +121,11 @@ void CharadesWindow::handleInGameInfoRespond(chs::Message message) {
             ui->clearButton->setDisabled(false);
             ui->drawWidget->setDisabled(false);
         } else {
-            ui->charadesLabel->setText(QString::fromStdString(fmt::format("Number of words: {}", wordCount)));
+            ui->charadesLabel->setText(QString::fromStdString(fmt::format("Number of words: {} currently drawing: {}", wordCount, drawer)));
             ui->chatInput->setDisabled(false);
         }
 
+        ui->startButton->setDisabled(true);
         gameState = GameState::PLAYING;
     }
 
@@ -119,6 +133,10 @@ void CharadesWindow::handleInGameInfoRespond(chs::Message message) {
         ui->chatInput->setDisabled(true);
         ui->charadesLabel->clear();
         gameState = GameState::WAITING_FOR_START;
+
+        if (owner == username) {
+            ui->startButton->setDisabled(false);
+        }
     }
 
     auto names = chs::explodeJoinedString(joinedNames, ';');
@@ -126,7 +144,29 @@ void CharadesWindow::handleInGameInfoRespond(chs::Message message) {
 
     ui->playersScoresList->clear();
     for (int i = 0; i < names.size(); ++i) {
-        auto item = QString::fromStdString(fmt::format("{} : {} points", names[i], scores[i]));
+        auto* item = new QListWidgetItem(QString::fromStdString(fmt::format("{} : {} points", names[i], scores[i])));
+        if (names[i] == owner) {
+            auto font = item->font();
+            font.setBold(true);
+            item->setFont(font);
+        }
         ui->playersScoresList->addItem(item);
     }
+}
+
+void CharadesWindow::disableRoomControls() {
+    ui->colorButton->setDisabled(true);
+    ui->clearButton->setDisabled(true);
+    ui->drawWidget->setDisabled(true);
+    ui->chatInput->setDisabled(true);
+    ui->startButton->setDisabled(true);
+}
+
+void CharadesWindow::printChatMessage(const std::string &message) {
+    ui->chatWindow->appendPlainText(QString::fromStdString(message));
+}
+
+void CharadesWindow::printServerMessage(const std::string &message) {
+    auto serverMessage = fmt::format("<b>{}</b>", message);
+    ui->chatWindow->appendHtml(QString::fromStdString(serverMessage));
 }

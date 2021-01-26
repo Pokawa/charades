@@ -13,17 +13,18 @@ public:
     explicit DrawWidget(QWidget *parent = nullptr);
     ~DrawWidget() override;
     void drawPixel(QPoint pt);
-    void drawLine(QPoint pt1, QPoint pt2);
-    void drawLine(QPoint pt1, QPoint pt2, QColor color);
+    void drawLineCurrentColor(QPoint pt1, QPoint pt2);
     void drawLineTo(QPoint pt);
 
 public slots:
     void clear();
     QColor drawColor();
     void setDrawColor(QColor color);
+    void drawLine(QPoint pt1, QPoint pt2, QColor color);
+
 
 signals:
-    void paintingLine(QPoint pt1, QPoint pt2, QColor color);
+    void linePainted(QPoint pt1, QPoint pt2, QColor color);
 
 protected:
     void paintEvent(QPaintEvent *) override;

@@ -24,7 +24,7 @@ public:
     void enterRoom(Room & room);
     [[nodiscard]] bool compareSocket(const chs::Socket & comparingSocket) const;
     Room& getRoom();
-    chs::Socket getSocket();
+    [[nodiscard]] chs::Socket getSocket() const;
     bool isInRoom();
     void exitRoom();
     void setScore(int newScore);

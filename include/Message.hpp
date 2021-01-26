@@ -19,10 +19,18 @@ namespace chs{
         NEW_ROOM_REQUEST,
         JOIN_ROOM_REQUEST,
         QUIT_ROOM_REQUEST,
+        START_GAME_REQUEST,
+        ENTER_DRAWING_QUEUE_REQUEST,
+        QUIT_DRAWING_QUEUE_REQUEST,
+        CHAT_MESSAGE,
+        DRAW_LINE,
+        CLEAR_DRAWING,
         OK_RESPOND,
         ERROR_RESPOND,
         ROOM_INFO_RESPOND,
         IN_GAME_INFO_RESPOND,
+        CHARADES_WORD_RESPOND,
+        SERVER_MESSAGE,
     };
 
     [[nodiscard]] MessageType getMessageType(const chs::Message & message);
@@ -83,6 +91,8 @@ namespace chs{
         auto ptr = message.data();
         return std::make_tuple(deserializeMessage<T>(ptr)...);
     }
+
+    [[nodiscard]] chs::Message addSizeToMessage(const chs::Message & message);
 }
 
 #endif //MESSAGE_HPP

@@ -15,7 +15,7 @@ namespace chs {
     class OutgoingMessageQueue {
     private:
         std::queue<chs::Message> queue;
-        const chs::Socket & socket;
+        const chs::Socket socket;
         chs::Message currentMessage;
         bool sending;
         bool blocked;

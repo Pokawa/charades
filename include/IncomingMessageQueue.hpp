@@ -18,7 +18,7 @@ namespace chs{
         std::size_t messageSize;
         std::size_t readBytes;
         std::string currentMessage;
-        const chs::Socket & socket;
+        const chs::Socket socket;
         bool reading;
 
     public:

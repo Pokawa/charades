@@ -58,5 +58,11 @@ IOHandler &IOHandler::getInstance() {
     return *instance;
 }
 
+void IOHandler::putMessage(const std::vector<Player *>& players, const chs::Message & message) {
+    for (auto* player : players) {
+        putMessage(player->getSocket(), message);
+    }
+}
+
 
 

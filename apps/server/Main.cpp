@@ -20,13 +20,6 @@ int main(int argc, char** argv){
     auto & playersHandler = PlayersHandler::getInstance();
     auto & roomsHandler = RoomsHandler::getInstance();
 
-    auto sendInGameInfoToRoomMembers = [&ioHandler](Room & room){
-        auto inGameInfoMessage = room.getInGameInfo();
-        for (auto playerItem : room.getPlayers()) {
-            ioHandler.putMessage(playerItem->getSocket(), inGameInfoMessage);
-        }
-    };
-
     while(true) {
         auto pollSockets = ConnectionHandler::getInstance().getPollSockets();
         auto ret = poll(pollSockets.data(), pollSockets.size(), -1);
@@ -80,7 +73,8 @@ int main(int argc, char** argv){
                     roomsHandler.newRoom(&player);
                     spdlog::info("Created new room for: {}[{}]", player.name, client.getAddress());
 
-                    sendInGameInfoToRoomMembers(player.getRoom());
+                    auto inGameInfoMessage = player.getRoom().getInGameInfo();
+                    ioHandler.putMessage(player.getRoom().getPlayers(), inGameInfoMessage);
                 }
 
                 if (type == chs::MessageType::JOIN_ROOM_REQUEST) {
@@ -93,7 +87,8 @@ int main(int argc, char** argv){
                         roomsHandler.joinRoom(roomNumber, &player);
                         spdlog::info("{} joined room {}", player.name, roomNumber);
 
-                        sendInGameInfoToRoomMembers(player.getRoom());
+                        auto inGameInfoMessage = player.getRoom().getInGameInfo();
+                        ioHandler.putMessage(player.getRoom().getPlayers(), inGameInfoMessage);
                     } else {
                         auto respondMessage = chs::constructMessage(chs::MessageType::ERROR_RESPOND);
                         ioHandler.putMessage(client, respondMessage);
@@ -104,10 +99,14 @@ int main(int argc, char** argv){
 
                 if (type == chs::MessageType::QUIT_ROOM_REQUEST) {
                     auto& player = playersHandler.getPlayer(client);
-                    spdlog::info("Player {} quit room {}", player.name, player.getRoom().getRoomNumber());
-                    auto& room = player.getRoom();
-                    room.removePlayer(&player);
-                    sendInGameInfoToRoomMembers(room);
+                    auto roomNumber = player.getRoom().getRoomNumber();
+                    spdlog::info("Player {} quit room {}", player.name, roomNumber);
+                    roomsHandler.quitRoom(&player);
+                    if (roomsHandler.roomExists(roomNumber)) {
+                        auto& room = roomsHandler.getRoomByNumber(roomNumber);
+                        auto inGameInfoMessage = room.getInGameInfo();
+                        ioHandler.putMessage(room.getPlayers(), inGameInfoMessage);
+                    }
                 }
 
                 if (type == chs::MessageType::LOG_OUT_REQUEST) {
@@ -115,9 +114,15 @@ int main(int argc, char** argv){
                         auto& player = playersHandler.getPlayer(client);
 
                         if (player.isInRoom()) {
-                            auto& room = player.getRoom();
-                            room.removePlayer(&player);
-                            sendInGameInfoToRoomMembers(room);
+                            auto roomNumber = player.getRoom().getRoomNumber();
+                            spdlog::info("Player {} quit room {}", player.name, roomNumber);
+                            roomsHandler.quitRoom(&player);
+                            if (roomsHandler.roomExists(roomNumber)) {
+
+                                auto& room = roomsHandler.getRoomByNumber(roomNumber);
+                                auto inGameInfoMessage = room.getInGameInfo();
+                                ioHandler.putMessage(room.getPlayers(), inGameInfoMessage);
+                            }
                         }
 
                         playersHandler.removePlayer(client);
@@ -127,6 +132,57 @@ int main(int argc, char** argv){
                     connectionHandler.closeClient(client);
                     spdlog::info("Log out from: {}", client.getAddress());
                     continue;
+                }
+
+                if (type == chs::MessageType::CHAT_MESSAGE) {
+                    auto& player = playersHandler.getPlayer(client);
+                    auto players = player.getRoom().getPlayers();
+
+                    auto [chat] = chs::deconstructMessage<std::string>(message);
+                    auto newChatMessage = chs::constructMessage(chs::MessageType::CHAT_MESSAGE,
+                                                                fmt::format("{} : {}"), player.name, chat);
+
+                    ioHandler.putMessage(players, newChatMessage);
+                }
+
+                if (type == chs::MessageType::DRAW_LINE) {
+                    auto& player = playersHandler.getPlayer(client);
+                    auto players = player.getRoom().getPlayersButOne(&player);
+                    auto renewedMessage = chs::addSizeToMessage(message);
+                    ioHandler.putMessage(players, renewedMessage);
+                }
+
+                if (type == chs::MessageType::CLEAR_DRAWING) {
+                    auto& player = playersHandler.getPlayer(client);
+                    auto players = player.getRoom().getPlayersButOne(&player);
+                    auto renewedMessage = chs::addSizeToMessage(message);
+                    ioHandler.putMessage(players, renewedMessage);
+                }
+
+                if (type == chs::MessageType::ENTER_DRAWING_QUEUE_REQUEST) {
+                    auto& player = playersHandler.getPlayer(client);
+                    auto position = player.getRoom().getInDrawingQueue(&player);
+                    auto respondMessage = chs::constructMessage(chs::MessageType::SERVER_MESSAGE,
+                                                                fmt::format("You are {} in queue", position));
+                    ioHandler.putMessage(player.getSocket(), respondMessage);
+                }
+
+                if (type == chs::MessageType::QUIT_DRAWING_QUEUE_REQUEST) {
+                    auto& player = playersHandler.getPlayer(client);
+                    player.getRoom().quitDrawingQueue(&player);
+                }
+
+                if (type == chs::MessageType::START_GAME_REQUEST) {
+                    auto& player = playersHandler.getPlayer(client);
+                    auto& room = player.getRoom();
+
+                    if (room.getNumberOfPlayers() >= 2) {
+                        room.startGame();
+                        auto inGameInfoMessage = room.getInGameInfo();
+                        ioHandler.putMessage(room.getPlayers(), inGameInfoMessage);
+                        ioHandler.putMessage(room.getDrawer()->getSocket(), room.getCharadesWordMessage());
+                        //TODO setup timer callbacks
+                    }
                 }
             }
         }

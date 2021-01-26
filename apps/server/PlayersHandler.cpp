@@ -34,7 +34,7 @@ void PlayersHandler::removePlayer(const chs::Socket & socket) {
     players.erase(position);
 }
 
-std::vector<Player>::iterator PlayersHandler::getPlayerPosition(const chs::Socket & socket) {
+std::list<Player>::iterator PlayersHandler::getPlayerPosition(const chs::Socket & socket) {
     return std::find_if(players.begin(), players.end(),
                                  [&socket](const Player & player){ return player.compareSocket(socket); });
 }

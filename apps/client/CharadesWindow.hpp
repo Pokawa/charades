@@ -25,7 +25,7 @@ class CharadesWindow : public QMainWindow
 public:
     explicit CharadesWindow(QWidget *parent = nullptr);
     explicit CharadesWindow(std::unique_ptr<CommunicationHandler> ptr, std::string username);
-    ~CharadesWindow();
+    ~CharadesWindow() override;
 
 private slots:
     void on_newRoomButton_clicked();
@@ -40,6 +40,9 @@ private slots:
     void on_drawingCheckbox_stateChanged(int arg1);
     void joinedRoom();
     void handleInGameInfoRespond(chs::Message message);
+    void disableRoomControls();
+    void printChatMessage(const std::string& message);
+    void printServerMessage(const std::string& message);
 
 private:
     Ui::CharadesWindow *ui;

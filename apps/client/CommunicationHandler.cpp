@@ -5,6 +5,8 @@
 #include <netdb.h>
 #include <spdlog/spdlog.h>
 #include <unistd.h>
+#include <QPoint>
+#include <QColor>
 #include "CommunicationHandler.hpp"
 #include "MessageReceiver.hpp"
 
@@ -48,12 +50,12 @@ void CommunicationHandler::handleMessage(chs::Message message) {
     auto type = chs::getMessageType(message);
     switch (type) {
         case chs::MessageType::OK_RESPOND:
-            if (lastRequest == chs::MessageType::LOG_IN_REQUEST) {
+            if (lastRequestToConfirm == chs::MessageType::LOG_IN_REQUEST) {
                 emit loginSuccessful();
             }
             break;
         case chs::MessageType::ERROR_RESPOND:
-            if (lastRequest == chs::MessageType::LOG_IN_REQUEST) {
+            if (lastRequestToConfirm == chs::MessageType::LOG_IN_REQUEST) {
                 emit loginFailed();
             }
             break;
@@ -62,10 +64,28 @@ void CommunicationHandler::handleMessage(chs::Message message) {
         }
             break;
         case chs::MessageType::IN_GAME_INFO_RESPOND: {
-            if (lastRequest == chs::MessageType::NEW_ROOM_REQUEST or lastRequest == chs::MessageType::JOIN_ROOM_REQUEST) {
+            if (lastRequestToConfirm == chs::MessageType::NEW_ROOM_REQUEST or lastRequestToConfirm == chs::MessageType::JOIN_ROOM_REQUEST) {
                 emit joinedRoom();
             }
             emit inGameInfoRespond(message);
+        }
+            break;
+        case chs::MessageType::CLEAR_DRAWING:
+            emit drawingCleared();
+            break;
+        case chs::MessageType::DRAW_LINE: {
+            auto [x1, y1, x2, y2, rgb] = chs::deconstructMessage<int, int, int, int, QRgb>(message);
+            emit linePainted(QPoint(x1, y1), QPoint(x2, y2), QColor(rgb));
+        }
+            break;
+        case chs::MessageType::CHAT_MESSAGE: {
+            auto [chat] = chs::deconstructMessage<std::string>(message);
+            emit receivedChatMessage(chat);
+        }
+            break;
+        case chs::MessageType::SERVER_MESSAGE: {
+            auto [chat] = chs::deconstructMessage<std::string>(message);
+            emit receivedServerMessage(chat);
         }
             break;
         default:
@@ -76,12 +96,12 @@ void CommunicationHandler::handleMessage(chs::Message message) {
 
 void CommunicationHandler::logInRequest(const std::string& username) {
     auto loginMessage = chs::constructMessage(chs::MessageType::LOG_IN_REQUEST, username);
-    lastRequest = chs::MessageType::LOG_IN_REQUEST;
+    lastRequestToConfirm = chs::MessageType::LOG_IN_REQUEST;
     sendMessage(loginMessage);
 }
 
 void CommunicationHandler::sendMessage(const chs::Message &message) {
-    send(socketFD, message.data(), message.size(), 0);
+    auto ret = send(socketFD, message.data(), message.size(), 0);
 }
 
 CommunicationHandler::~CommunicationHandler() {
@@ -90,8 +110,7 @@ CommunicationHandler::~CommunicationHandler() {
 
 void CommunicationHandler::disconnectFromHost() {
     stopMessageReceiver();
-    auto disconnectMessage = chs::constructMessage(chs::MessageType::LOG_OUT_REQUEST);
-    sendMessage(disconnectMessage);
+    sendRequest(chs::MessageType::LOG_OUT_REQUEST);
     close(socketFD);
 }
 
@@ -101,19 +120,51 @@ void CommunicationHandler::stopMessageReceiver() {
 }
 
 void CommunicationHandler::roomsInfoRequest() {
-    auto roomsInfoMessage = chs::constructMessage(chs::MessageType::ROOMS_INFO_REQUEST);
-    lastRequest = chs::MessageType::ROOMS_INFO_REQUEST;
-    sendMessage(roomsInfoMessage);
+    sendRequest(chs::MessageType::ROOMS_INFO_REQUEST);
 }
 
 void CommunicationHandler::joinRoomRequest(int roomNumber) {
     auto joinRoomRequest = chs::constructMessage(chs::MessageType::JOIN_ROOM_REQUEST, roomNumber);
-    lastRequest = chs::MessageType::JOIN_ROOM_REQUEST;
+    lastRequestToConfirm = chs::MessageType::JOIN_ROOM_REQUEST;
     sendMessage(joinRoomRequest);
 }
 
 void CommunicationHandler::newRoomRequest() {
-    auto newRoomRequest = chs::constructMessage(chs::MessageType::NEW_ROOM_REQUEST);
-    lastRequest = chs::MessageType::NEW_ROOM_REQUEST;
-    sendMessage(newRoomRequest);
+    sendRequest(chs::MessageType::NEW_ROOM_REQUEST);
+    lastRequestToConfirm = chs::MessageType::NEW_ROOM_REQUEST;
+}
+
+void CommunicationHandler::exitRoomRequest() {
+    sendRequest(chs::MessageType::QUIT_ROOM_REQUEST);
+}
+
+void CommunicationHandler::sendRequest(chs::MessageType request) {
+    auto requestMessage = chs::constructMessage(request);
+    sendMessage(requestMessage);
+}
+
+void CommunicationHandler::startGameRequest() {
+    sendRequest(chs::MessageType::START_GAME_REQUEST);
+}
+
+void CommunicationHandler::enterDrawingQueueRequest() {
+    sendRequest(chs::MessageType::ENTER_DRAWING_QUEUE_REQUEST);
+}
+
+void CommunicationHandler::leaveDrawingQueueRequest() {
+    sendRequest(chs::MessageType::QUIT_DRAWING_QUEUE_REQUEST);
+}
+
+void CommunicationHandler::sendChatMessageRequest(const std::string& message) {
+    auto chatMessage = chs::constructMessage(chs::MessageType::CHAT_MESSAGE, message);
+    sendMessage(chatMessage);
+}
+
+void CommunicationHandler::drawLineRequest(QPoint pt1, QPoint pt2, const QColor& color) {
+    auto drawLineMessage = chs::constructMessage(chs::MessageType::DRAW_LINE, pt1.x(), pt1.y(), pt2.x(), pt2.y(), color.rgb());
+    sendMessage(drawLineMessage);
+}
+
+void CommunicationHandler::clearRequest() {
+    sendRequest(chs::MessageType::CLEAR_DRAWING);
 }
