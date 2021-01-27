@@ -177,7 +177,7 @@ int main(int argc, char** argv){
                     auto& room = player.getRoom();
 
                     if (room.getNumberOfPlayers() >= 2) {
-                        room.startGame();
+                        room.startRound();
                         auto inGameInfoMessage = room.getInGameInfo();
                         ioHandler.putMessage(room.getPlayers(), inGameInfoMessage);
                         ioHandler.putMessage(room.getDrawer()->getSocket(), room.getCharadesWordMessage());

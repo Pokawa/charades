@@ -55,6 +55,7 @@ signals:
     void drawingCleared();
     void receivedChatMessage(const std::string& message);
     void receivedServerMessage(const std::string& message);
+    void receivedCharadesWord(const std::string& word);
 
 };
 

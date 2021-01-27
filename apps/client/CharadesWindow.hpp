@@ -16,6 +16,7 @@ class CharadesWindow : public QMainWindow
     std::unique_ptr<CommunicationHandler> communicationHandler;
     std::chrono::time_point<std::chrono::system_clock> roundStartingPoint;
     std::string username;
+    int numberOfPlayers;
     enum class GameState {
         PLAYING,
         WAITING_FOR_INFO,
@@ -43,6 +44,7 @@ private slots:
     void disableRoomControls();
     void printChatMessage(const std::string& message);
     void printServerMessage(const std::string& message);
+    void printCharadesWordForDrawer(const std::string& message);
 
 private:
     Ui::CharadesWindow *ui;

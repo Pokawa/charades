@@ -16,7 +16,6 @@ DrawWidget::DrawWidget(QWidget *parent) : QWidget(parent), painting(false), last
     drawingColor = QColor(Qt::black);
     this->setFixedSize(600, 600);
     clearCanvas(canvas, width(), height());
-    spdlog::info("width {} height {}", width(), height());setFixedSize(600, 600);
 }
 
 DrawWidget::~DrawWidget() = default;
@@ -30,7 +29,7 @@ void DrawWidget::drawLineCurrentColor(QPoint pt1, QPoint pt2) {
     drawLine(pt1, pt2, drawingColor);
 }
 
-void DrawWidget::drawLine(QPoint pt1, QPoint pt2, QColor color) {
+void DrawWidget::drawLine(QPoint pt1, QPoint pt2, const QColor& color) {
     QPainter painter(&canvas);
 
     // Set the current settings for the pen

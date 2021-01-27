@@ -9,17 +9,17 @@
 #include <vector>
 #include <random>
 
-class charadesWordsPool {
+class CharadesWordsPool {
     std::vector<std::string> pool;
-    static std::unique_ptr<charadesWordsPool> instance;
+    static std::unique_ptr<CharadesWordsPool> instance;
     std::random_device rd;
     std::mt19937 mt;
 
 public:
-    void operator=(const charadesWordsPool &) = delete;
-    charadesWordsPool(charadesWordsPool &other) = delete;
-    static charadesWordsPool& getInstance();
-    charadesWordsPool();
+    void operator=(const CharadesWordsPool &) = delete;
+    CharadesWordsPool(CharadesWordsPool &other) = delete;
+    static CharadesWordsPool& getInstance();
+    CharadesWordsPool();
     std::string getRandomWord();
 };
 

@@ -2,18 +2,18 @@
 // Created by hubert on 27.01.2021.
 //
 
-#include "charadesWordsPool.hpp"
+#include "CharadesWordsPool.hpp"
 #include <fstream>
 
-std::unique_ptr<charadesWordsPool> charadesWordsPool::instance;
-charadesWordsPool &charadesWordsPool::getInstance() {
+std::unique_ptr<CharadesWordsPool> CharadesWordsPool::instance;
+CharadesWordsPool &CharadesWordsPool::getInstance() {
     if (instance == nullptr) {
-        instance = std::make_unique<charadesWordsPool>();
+        instance = std::make_unique<CharadesWordsPool>();
     }
     return *instance;
 }
 
-charadesWordsPool::charadesWordsPool() : mt(rd()) {
+CharadesWordsPool::CharadesWordsPool() : mt(rd()) {
     std::ifstream file{"words.txt"};
 
     while(!file.eof()) {
@@ -25,7 +25,7 @@ charadesWordsPool::charadesWordsPool() : mt(rd()) {
     file.close();
 }
 
-std::string charadesWordsPool::getRandomWord() {
+std::string CharadesWordsPool::getRandomWord() {
     auto maxIndex = static_cast<int>(pool.size()) - 1;
     std::uniform_int_distribution<int> dist{0, maxIndex};
     return pool.at(dist(mt));

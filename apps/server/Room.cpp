@@ -3,6 +3,7 @@
 //
 
 #include "Room.hpp"
+#include "CharadesWordsPool.hpp"
 
 void Room::addPlayer(Player* player) {
     players.push_back(player);
@@ -99,10 +100,10 @@ std::string Room::getJoinedPlayerScores() const {
     return chs::joinStrings(playerScores, ';');
 }
 
-void Room::startGame() {
+void Room::startRound() {
     roundStartTimePoint = std::chrono::system_clock::now();
     gameIsActive = true;
-    charadesWord = "temp"; //TODO random word;
+    charadesWord = CharadesWordsPool::getInstance().getRandomWord();
     wordCount = static_cast<int>(std::count(charadesWord.begin(), charadesWord.end(), ' ')) + 1;
     nextDrawer();
 }

@@ -88,6 +88,11 @@ void CommunicationHandler::handleMessage(chs::Message message) {
             emit receivedServerMessage(chat);
         }
             break;
+        case chs::MessageType::CHARADES_WORD_RESPOND: {
+            auto [word] = chs::deconstructMessage<std::string>(message);
+            emit receivedCharadesWord(word);
+        }
+            break;
         default:
             spdlog::info("Unknown message received. type: {} message: {]", type, message);
             break;

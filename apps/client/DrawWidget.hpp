@@ -20,7 +20,7 @@ public slots:
     void clear();
     QColor drawColor();
     void setDrawColor(QColor color);
-    void drawLine(QPoint pt1, QPoint pt2, QColor color);
+    void drawLine(QPoint pt1, QPoint pt2, const QColor& color);
 
 
 signals:

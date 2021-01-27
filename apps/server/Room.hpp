@@ -37,7 +37,7 @@ public:
     [[nodiscard]] int getNumberOfPlayers();
     [[nodiscard]] std::vector<Player*> getPlayersButOne(Player * player);
     [[nodiscard]] std::vector<Player *> getPlayers();
-    void startGame();
+    void startRound();
     Player* getDrawer();
     std::string getCharadesWordMessage();
 
