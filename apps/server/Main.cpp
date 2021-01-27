@@ -140,7 +140,7 @@ int main(int argc, char** argv){
 
                     auto [chat] = chs::deconstructMessage<std::string>(message);
                     auto newChatMessage = chs::constructMessage(chs::MessageType::CHAT_MESSAGE,
-                                                                fmt::format("{} : {}"), player.name, chat);
+                                                                fmt::format("{} : {}", player.name, chat));
 
                     ioHandler.putMessage(players, newChatMessage);
                 }
