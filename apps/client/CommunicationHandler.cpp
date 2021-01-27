@@ -65,6 +65,7 @@ void CommunicationHandler::handleMessage(chs::Message message) {
             break;
         case chs::MessageType::IN_GAME_INFO_RESPOND: {
             if (lastRequestToConfirm == chs::MessageType::NEW_ROOM_REQUEST or lastRequestToConfirm == chs::MessageType::JOIN_ROOM_REQUEST) {
+                lastRequestToConfirm = chs::MessageType::OK_RESPOND;
                 emit joinedRoom();
             }
             emit inGameInfoRespond(message);

@@ -40,8 +40,8 @@ public:
     void startRound();
     Player* getDrawer();
     std::string getCharadesWordMessage();
-
-
+    bool guessIsClose(const std::string& guess);
+    bool guessIsRight(const std::string& guess);
 
 private:
     [[nodiscard]] std::string getJoinedPLayerNames() const;

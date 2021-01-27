@@ -26,6 +26,10 @@ void Room::removePlayer(Player* player) {
             nextDrawer();
         }
     }
+
+    if (getNumberOfPlayers() < 2) {
+        gameIsActive = false;
+    }
 }
 
 chs::Message Room::getRoomInfo() const {
@@ -69,9 +73,9 @@ void Room::nextDrawer() {
         if (drawer == drawingQueue.front()) {
             drawingQueue.push_back(drawer);
             drawingQueue.pop_front();
+        } else {
+            drawer = drawingQueue.front();
         }
-
-        drawer = drawingQueue.front();
     }
 }
 
@@ -114,6 +118,14 @@ Player *Room::getDrawer() {
 
 std::string Room::getCharadesWordMessage() {
     return chs::constructMessage(chs::MessageType::CHARADES_WORD_RESPOND, charadesWord);
+}
+
+bool Room::guessIsClose(const std::string& guess) {
+    return guess.length() >= 3 and charadesWord.find(guess) != std::string::npos;
+}
+
+bool Room::guessIsRight(const std::string& guess) {
+    return charadesWord == guess;
 }
 
 

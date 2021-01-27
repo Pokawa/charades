@@ -136,13 +136,40 @@ int main(int argc, char** argv){
 
                 if (type == chs::MessageType::CHAT_MESSAGE) {
                     auto& player = playersHandler.getPlayer(client);
-                    auto players = player.getRoom().getPlayers();
+                    auto& room = player.getRoom();
+                    auto players = room.getPlayers();
 
                     auto [chat] = chs::deconstructMessage<std::string>(message);
                     auto newChatMessage = chs::constructMessage(chs::MessageType::CHAT_MESSAGE,
                                                                 fmt::format("{} : {}", player.name, chat));
 
+                    spdlog::info("Chat message {} from {}", chat, player.name);
                     ioHandler.putMessage(players, newChatMessage);
+
+                    if (room.guessIsRight(chat)) {
+                        auto guessIsRightMessage = chs::constructMessage(chs::MessageType::SERVER_MESSAGE,
+                                                                         fmt::format("{} SUCCEEDED! {}", player.name, chat));
+                        ioHandler.putMessage(players, guessIsRightMessage);
+                        player.addScore(chat.size());
+                        room.getDrawer()->addScore(chat.size() / 2);
+                        //TODO setup timer callbacks
+                        //TODO check if someone won
+
+                        room.startRound();
+                        auto inGameInfoMessage = room.getInGameInfo();
+                        ioHandler.putMessage(players, inGameInfoMessage);
+
+                        auto clearDrawingMessage = chs::constructMessage(chs::MessageType::CLEAR_DRAWING);
+                        ioHandler.putMessage(players, clearDrawingMessage);
+
+                        auto newRoundWordMessage = room.getCharadesWordMessage();
+                        ioHandler.putMessage(room.getDrawer()->getSocket(), newRoundWordMessage);
+
+                    } else if (room.guessIsClose(chat)) {
+                        auto guessIsCloseMessage = chs::constructMessage(chs::MessageType::SERVER_MESSAGE,
+                                                                        fmt::format("CLOSE ONE! {}", chat));
+                        ioHandler.putMessage(players, guessIsCloseMessage);
+                    }
                 }
 
                 if (type == chs::MessageType::DRAW_LINE) {
@@ -164,12 +191,14 @@ int main(int argc, char** argv){
                     auto position = player.getRoom().getInDrawingQueue(&player);
                     auto respondMessage = chs::constructMessage(chs::MessageType::SERVER_MESSAGE,
                                                                 fmt::format("You are {} in queue", position));
+                    spdlog::info("{} entered drawing queue as {}", player.name, position);
                     ioHandler.putMessage(player.getSocket(), respondMessage);
                 }
 
                 if (type == chs::MessageType::QUIT_DRAWING_QUEUE_REQUEST) {
                     auto& player = playersHandler.getPlayer(client);
                     player.getRoom().quitDrawingQueue(&player);
+                    spdlog::info("{} left drawing queue", player.name);
                 }
 
                 if (type == chs::MessageType::START_GAME_REQUEST) {

@@ -116,7 +116,6 @@ void CharadesWindow::joinedRoom() {
     ui->chatWindow->clear();
     ui->playersScoresList->clear();
     ui->drawingCheckbox->setCheckState(Qt::Unchecked);
-
     ui->stackedWidget->setCurrentIndex(1);
 }
 
@@ -124,7 +123,7 @@ void CharadesWindow::handleInGameInfoRespond(chs::Message message) {
     auto [owner, joinedNames, joinedScores, gameIsActive, startPoint, drawer, wordCount] =
             chs::deconstructMessage<std::string, std::string, std::string, bool, std::chrono::time_point<std::chrono::system_clock>, std::string, int>(message);
 
-    if (gameIsActive and gameState != GameState::PLAYING) {
+    if (gameIsActive) {
         roundStartingPoint = startPoint;
 
         if (drawer == username) {
