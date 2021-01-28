@@ -16,10 +16,12 @@ protected:
     int socketFD;
 
 public:
-    MessageReceiver(int socketFD);
+    explicit MessageReceiver(int socketFD);
 
 signals:
     void messageReceived(const chs::Message& message);
+    void errorOccurred();
+    void serverHangUp();
 };
 
 

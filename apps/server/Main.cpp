@@ -21,7 +21,7 @@ int main(int argc, char** argv){
     auto & playersHandler = PlayersHandler::getInstance();
 
     while(true) {
-        auto pollSockets = ConnectionHandler::getInstance().getPollSockets();
+        auto pollSockets = connectionHandler.getPollSockets();
         auto ret = poll(pollSockets.data(), pollSockets.size(), -1);
 
         if (pollSockets[0].revents & POLLIN) {
@@ -48,6 +48,7 @@ int main(int argc, char** argv){
             }
         }
 
+        pollSockets = connectionHandler.getPollSockets();
         for (int i = 1; i < pollSockets.size(); ++i) {
             auto client = connectionHandler.getSocket(pollSockets[i].fd);
             while (ioHandler.isMessageToGet(client)) {

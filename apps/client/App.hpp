@@ -20,6 +20,8 @@ class App : public QObject {
 public slots:
     void loginAndStart();
     void openCharadesWindow();
+    void setConnectionLostLabel();
+
 };
 
 

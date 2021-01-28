@@ -9,6 +9,7 @@
 #include <Socket.hpp>
 #include <IncomingMessageQueue.hpp>
 #include <OutgoingMessageQueue.hpp>
+#include <cpptime.h>
 #include "ConnectionHandler.hpp"
 #include "Player.hpp"
 
@@ -18,6 +19,7 @@ private:
     std::map<int, chs::OutgoingMessageQueue> outgoingQueues;
 
     static std::unique_ptr<IOHandler> instance;
+    static CppTime::Timer timer;
 
 public:
     void operator=(const IOHandler &) = delete;
@@ -27,13 +29,15 @@ public:
 
     void addClient(const chs::Socket & socket);
     void removeClient(const chs::Socket & socket);
-    void receiveFrom(const chs::Socket & socket);
-    void sendTo(const chs::Socket & socket);
-    void putMessage(const chs::Socket & socket, const chs::Message & message);
+    void receiveFrom(chs::Socket & socket);
+    void sendTo(chs::Socket socket);
+    void putMessage(chs::Socket socket, const chs::Message & message);
     void putMessage(const std::vector<Player*>& players, const chs::Message & message);
     void putMessages(const chs::Socket & socket, std::vector<chs::Message> & messages);
     bool isMessageToGet(const chs::Socket & socket);
     chs::Message getMessage(const chs::Socket & socket);
+
+    void closeConnection(chs::Socket &socket);
 };
 
 #endif //CHARADES_IOHANDLER_HPP

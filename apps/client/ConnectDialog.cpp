@@ -59,3 +59,7 @@ std::unique_ptr<CommunicationHandler> ConnectDialog::getCommunicationHandler() {
 std::string ConnectDialog::getUserName() {
     return ui->usernameInput->text().toStdString();
 }
+
+void ConnectDialog::setConnectionLostLabel() {
+    ui->respondLabel->setText("Connection lost ( ͡° ʖ̯ ͡°)");
+}

@@ -11,7 +11,10 @@ chs::IncomingMessageQueue::IncomingMessageQueue(const chs::Socket & socket) : so
 }
 
 bool chs::IncomingMessageQueue::readMessages() {
-    auto buff = getBufferSize();
+    if (getBufferSize() == 0) {
+        return false;
+    }
+
     while ((getBufferSize() > 0 and reading) or (not reading and getBufferSize() >= sizeof(std::size_t))){
 
         if (not reading) {

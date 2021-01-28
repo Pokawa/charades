@@ -98,7 +98,7 @@ void ConnectionHandler::closeClient(chs::Socket & client) {
     auto pos = std::find_if(clientsSockets.begin(), clientsSockets.end(),
                             [&client](const chs::Socket & socket){ return client.getDescriptor() == socket.getDescriptor(); });
     if (pos != clientsSockets.end()) {
-        spdlog::info("Closing connection with {}", client.getAddress());
+        spdlog::info("Closing connection with {}", client.getPort());
 
         client.close();
         clientsSockets.erase(pos);

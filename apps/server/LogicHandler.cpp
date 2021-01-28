@@ -23,19 +23,19 @@ void LogicHandler::handleMessage(chs::Message message) {
             safelyQuitRoom();
             playersHandler.removePlayer(socket);
             connectionHandler.closeClient(socket);
-            spdlog::info("Removed player: {}", playerName);
-            spdlog::info("Log out from: {}", playerName);
+            spdlog::info("Removed player {}", playerName);
+            spdlog::info("Log out from {}", playerName);
         }
             break;
         case chs::MessageType::ROOMS_INFO_REQUEST: {
             auto roomsInfo = roomsHandler.getRoomsInfo();
             ioHandler.putMessages(socket, roomsInfo);
-            spdlog::info("Sent rooms info to: {}", player->name);
+            spdlog::info("Sent rooms info to {}", player->name);
         }
             break;
         case chs::MessageType::NEW_ROOM_REQUEST: {
             roomsHandler.newRoom(player);
-            spdlog::info("Created new room for: {}", player->name);
+            spdlog::info("Created new room for {}", player->name);
             sendInGameInfo();
         }
             break;
@@ -60,6 +60,8 @@ void LogicHandler::handleMessage(chs::Message message) {
             break;
         case chs::MessageType::START_GAME_REQUEST: {
             auto &room = player->getRoom();
+
+            spdlog::info("room {} started game", room.getRoomNumber());
 
             if (room.getOwner() == player and room.getNumberOfPlayers() >= 2) {
                 startNewRound(room);

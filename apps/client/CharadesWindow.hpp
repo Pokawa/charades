@@ -42,7 +42,6 @@ private slots:
     void printChatMessage(const std::string& message);
     void printServerMessage(const std::string& message);
     void printCharadesWordForDrawer(const std::string& message);
-
     void on_chatInput_returnPressed();
 
 private:

@@ -9,7 +9,9 @@
 #include <string>
 #include <QObject>
 #include <Message.hpp>
+#include <OutgoingMessageQueue.hpp>
 #include "MessageReceiver.hpp"
+#include "cpptime.h"
 
 class CommunicationHandler : public QObject {
     Q_OBJECT
@@ -17,6 +19,9 @@ class CommunicationHandler : public QObject {
     int socketFD;
     MessageReceiver asyncMessageReceiver;
     chs::MessageType lastRequestToConfirm;
+    chs::OutgoingMessageQueue outgoingMessageQueue;
+
+    static CppTime::Timer timer;
 
 public:
     explicit CommunicationHandler(int socketFD);
@@ -56,7 +61,7 @@ signals:
     void receivedChatMessage(const std::string& message);
     void receivedServerMessage(const std::string& message);
     void receivedCharadesWord(const std::string& word);
-
+    void connectionLost();
 };
 
 

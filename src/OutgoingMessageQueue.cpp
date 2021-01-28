@@ -27,7 +27,7 @@ bool chs::OutgoingMessageQueue::sendMessages() {
         if (sending) {
             auto startingAddress = currentMessage.data() + sentOffset;
             auto remainingLength = currentMessage.size() - sentOffset;
-            auto sentBytes = send(socket.getDescriptor(),  startingAddress, remainingLength, 0);
+            auto sentBytes = send(socket.getDescriptor(),  startingAddress, remainingLength, MSG_DONTWAIT);
 
             if (sentBytes == -1) {
                 spdlog::error("Sending to socket error: {}", strerror(errno));

@@ -41,9 +41,12 @@ int CommunicationHandler::getSocketFD() const {
     return socketFD;
 }
 
-CommunicationHandler::CommunicationHandler(int socketFD) : socketFD(socketFD), asyncMessageReceiver(socketFD) {
+CommunicationHandler::CommunicationHandler(int socketFD) : socketFD(socketFD),
+                                                           asyncMessageReceiver(socketFD),
+                                                           outgoingMessageQueue(chs::Socket(socketFD, {})) {
     connect(&asyncMessageReceiver, &MessageReceiver::messageReceived, this, &CommunicationHandler::handleMessage);
     asyncMessageReceiver.start();
+    connect(&asyncMessageReceiver, &MessageReceiver::serverHangUp, this, &CommunicationHandler::connectionLost);
 }
 
 void CommunicationHandler::handleMessage(chs::Message message) {
@@ -106,8 +109,27 @@ void CommunicationHandler::logInRequest(const std::string& username) {
     sendMessage(loginMessage);
 }
 
+CppTime::Timer CommunicationHandler::timer;
+
 void CommunicationHandler::sendMessage(const chs::Message &message) {
-    auto ret = send(socketFD, message.data(), message.size(), 0);
+    outgoingMessageQueue.putMessage(message);
+    auto success = outgoingMessageQueue.sendMessages();
+
+    if (not success) {
+        emit connectionLost();
+        return;
+    }
+
+    if (outgoingMessageQueue.isBlocked()) {
+        spdlog::warn("socket is blocked");
+
+        timer.add(std::chrono::seconds(30), [this](CppTime::timer_id id){
+            if (outgoingMessageQueue.isBlocked()) {
+                spdlog::error("socket is still blocked");
+                emit connectionLost();
+            }
+        });
+    }
 }
 
 CommunicationHandler::~CommunicationHandler() {
@@ -121,7 +143,9 @@ void CommunicationHandler::disconnectFromHost() {
 }
 
 void CommunicationHandler::stopMessageReceiver() {
-    asyncMessageReceiver.terminate();
+    if (asyncMessageReceiver.isRunning()) {
+        asyncMessageReceiver.terminate();
+    }
     asyncMessageReceiver.wait();
 }
 

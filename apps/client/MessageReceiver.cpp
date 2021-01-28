@@ -13,7 +13,19 @@ void MessageReceiver::run() {
 
         //read message
         chs::Message message(messageSize, 0);
-        recv(socketFD, message.data(), messageSize, MSG_WAITALL);
+        auto ret = recv(socketFD, message.data(), messageSize, MSG_WAITALL);
+
+        if (ret == 0) {
+            spdlog::critical("Server hanged up");
+            emit serverHangUp();
+            break;
+        }
+
+        if (ret == -1) {
+            spdlog::critical("Message receive error {}", strerror(errno));
+            emit errorOccurred();
+            break;
+        }
 
         //emit signal
         emit messageReceived(message);

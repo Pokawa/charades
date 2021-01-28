@@ -22,6 +22,9 @@ public:
     std::unique_ptr<CommunicationHandler> getCommunicationHandler();
     std::string getUserName();
 
+public slots:
+    void setConnectionLostLabel();
+
 private slots:
     void on_connectButton_clicked();
     void on_ConnectDialog_accepted();
