@@ -21,16 +21,21 @@ class LogicHandler {
     ConnectionHandler& connectionHandler;
 
 public:
+    static CppTime::Timer timer;
+
+public:
     explicit LogicHandler(Player * player);
     void handleMessage(chs::Message message);
     static void sendInGameInfo(const Room & room);
     static void safelyQuitRoom(Player* player);
     static void sendSimpleRespond(chs::Socket socket, chs::MessageType type);
-
+    static void startNewRound(Room& room);
+    static void setTimerCallbacks(Room& room);
+    static void sendServerMessage(Room& room, const std::string& message);
 
 private:
     void sendInGameInfo();
-    void startNewRound();
+    void sendServerMessage(const std::string& message);
     void sendSuccessfulGuess(const std::string& guess);
     void sendCloseGuess(const std::string& guess);
     void sendSimpleRespond(chs::MessageType type);

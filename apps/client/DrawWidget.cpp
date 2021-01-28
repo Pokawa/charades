@@ -33,7 +33,7 @@ void DrawWidget::drawLine(QPoint pt1, QPoint pt2, const QColor& color) {
     QPainter painter(&canvas);
 
     // Set the current settings for the pen
-    painter.setPen(QPen(color, 1, Qt::SolidLine, Qt::RoundCap,
+    painter.setPen(QPen(color, 2, Qt::SolidLine, Qt::RoundCap,
                         Qt::RoundJoin));
 
     // Draw a line from the last registered point to the current

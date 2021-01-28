@@ -4,8 +4,11 @@
 
 #include "Room.hpp"
 #include "CharadesWordsPool.hpp"
+#include "IOHandler.hpp"
+#include "LogicHandler.hpp"
 
 void Room::addPlayer(Player* player) {
+    player->setScore(0);
     players.push_back(player);
     player->enterRoom(*this);
 }
@@ -29,6 +32,9 @@ void Room::removePlayer(Player* player) {
 
     if (getNumberOfPlayers() < 2) {
         gameIsActive = false;
+        for (auto* roomMember : players) {
+            roomMember->setScore(0);
+        }
     }
 }
 
@@ -43,8 +49,14 @@ chs::Message Room::getInGameInfo() const {
     return chs::constructMessage(chs::MessageType::IN_GAME_INFO_RESPOND, owner->name, joinedNames, joinedScores, gameIsActive, roundStartTimePoint, drawer->name, wordCount);
 }
 
-Room::Room(int roomNumber, Player* owner) : roomNumber(roomNumber), owner(owner), drawer(owner), gameIsActive(false), roundStartTimePoint(), wordCount(0) {
+Room::Room(int roomNumber, Player* owner) : roomNumber(roomNumber),
+                                            owner(owner),
+                                            drawer(owner),
+                                            gameIsActive(false),
+                                            roundStartTimePoint(),
+                                            wordCount(0) {
     addPlayer(owner);
+    endOfRoundTimer = halfTheTimeTimer = threeQuartersTimeTimer = -1;
 }
 
 int Room::getRoomNumber() const {
@@ -65,7 +77,7 @@ int Room::getInDrawingQueue(Player *player) {
 }
 
 void Room::quitDrawingQueue(Player *player) {
-    drawingQueue.erase(std::find(drawingQueue.begin(), drawingQueue.end(), player));
+    drawingQueue.erase(std::remove(drawingQueue.begin(), drawingQueue.end(), player), drawingQueue.end());
 }
 
 void Room::nextDrawer() {
@@ -129,8 +141,25 @@ bool Room::isGameActive() const {
     return gameIsActive;
 }
 
-Player *Room::getOwner() {
+Player *Room::getOwner() const {
     return owner;
+}
+
+void Room::stopTimers(CppTime::Timer& timer) {
+    timer.remove(endOfRoundTimer);
+    timer.remove(halfTheTimeTimer);
+    timer.remove(threeQuartersTimeTimer);
+}
+
+void Room::setTheTimers(CppTime::timer_id endTimer, CppTime::timer_id halfTimer,
+                        CppTime::timer_id quarterTimer) {
+    endOfRoundTimer = endTimer;
+    halfTheTimeTimer = halfTimer;
+    threeQuartersTimeTimer = quarterTimer;
+}
+
+std::string Room::getCharadesWord() const {
+    return charadesWord;
 }
 
 

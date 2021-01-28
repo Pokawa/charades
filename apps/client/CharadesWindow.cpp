@@ -70,15 +70,6 @@ void CharadesWindow::on_colorButton_clicked()
     ui->drawWidget->setDrawColor(color);
 }
 
-void CharadesWindow::on_chatInput_editingFinished()
-{
-    auto input = ui->chatInput->text();
-    if (!input.isEmpty()) {
-        communicationHandler->sendChatMessageRequest(input.toStdString());
-        ui->chatInput->clear();
-    }
-}
-
 void CharadesWindow::on_exitButton_clicked()
 {
     communicationHandler->exitRoomRequest();
@@ -123,7 +114,27 @@ void CharadesWindow::handleInGameInfoRespond(chs::Message message) {
             chs::deconstructMessage<std::string, std::string, std::string, bool, std::chrono::time_point<std::chrono::system_clock>, std::string, int>(message);
 
     if (gameIsActive) {
-        roundStartingPoint = startPoint;
+        if (roundStartingPoint != startPoint) {
+            roundStartingPoint = startPoint;
+
+            timer.remove(labelUpdater);
+
+            auto updateLabel = [this](CppTime::timer_id id){
+                auto elapsed = std::chrono::system_clock::now() - roundStartingPoint;
+                if (elapsed < std::chrono::minutes(3)) {
+                    auto left = std::chrono::minutes(3) - elapsed;
+                    auto minutes = std::chrono::duration_cast<std::chrono::minutes>(left).count();
+                    auto seconds = std::chrono::duration_cast<std::chrono::seconds>(left - std::chrono::minutes(minutes)).count();
+
+                    auto newLabel = fmt::format("{}:{:0>2}", minutes, seconds);
+                    ui->timeLabel->setText(QString::fromStdString(newLabel));
+                } else {
+                    timer.remove(id);
+                }
+            };
+
+            labelUpdater = timer.add(std::chrono::seconds(0), updateLabel, std::chrono::seconds(1));
+        }
         disableRoomControls();
 
         if (drawer == username) {
@@ -131,7 +142,7 @@ void CharadesWindow::handleInGameInfoRespond(chs::Message message) {
             ui->clearButton->setEnabled(true);
             ui->drawWidget->setEnabled(true);
         } else {
-            ui->charadesLabel->setText(QString::fromStdString(fmt::format("Number of words: {} currently drawing: {}", wordCount, drawer)));
+            ui->charadesLabel->setText(QString::fromStdString(fmt::format("Number of words: {} Currently drawing: {}", wordCount, drawer)));
             ui->chatInput->setEnabled(true);
         }
 
@@ -156,6 +167,8 @@ void CharadesWindow::handleInGameInfoRespond(chs::Message message) {
     if (not gameIsActive) {
         disableRoomControls();
         ui->charadesLabel->clear();
+        timer.remove(labelUpdater);
+        ui->timeLabel->setText("3:00");
 
         if (owner == username and numberOfPlayers >= 2) {
             ui->startButton->setEnabled(true);
@@ -175,14 +188,25 @@ void CharadesWindow::disableRoomControls() {
 
 void CharadesWindow::printChatMessage(const std::string &message) {
     ui->chatWindow->appendPlainText(QString::fromStdString(message));
+    ui->chatWindow->update();
 }
 
 void CharadesWindow::printServerMessage(const std::string &message) {
     auto serverMessage = fmt::format("<b>{}</b>", message);
     ui->chatWindow->appendHtml(QString::fromStdString(serverMessage));
+    ui->chatWindow->update();
 }
 
 void CharadesWindow::printCharadesWordForDrawer(const std::string & word) {
     auto labelText = fmt::format("Word: {}", word);
     ui->charadesLabel->setText(QString::fromStdString(labelText));
+}
+
+void CharadesWindow::on_chatInput_returnPressed()
+{
+    auto input = ui->chatInput->text();
+    if (!input.isEmpty()) {
+        communicationHandler->sendChatMessageRequest(input.toStdString());
+        ui->chatInput->clear();
+    }
 }

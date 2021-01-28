@@ -39,6 +39,8 @@ namespace chs{
 
     [[nodiscard]] std::vector<std::string> explodeJoinedString(const std::string & joined, char delimiter);
 
+    [[nodiscard]] std::string utf8_substr(const std::string& str, std::string::size_type start, std::string::size_type leng);
+
     template<typename T>
     [[nodiscard]] std::size_t messageSize(const T& arg) {
         return sizeof(arg);

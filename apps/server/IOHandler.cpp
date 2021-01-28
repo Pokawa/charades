@@ -31,7 +31,7 @@ void IOHandler::sendTo(const chs::Socket &socket) {
 
 void IOHandler::putMessage(const chs::Socket &socket, const chs::Message & message) {
     outgoingQueues.at(socket.getDescriptor()).putMessage(message);
-    ConnectionHandler::getInstance().setForWrite(socket);
+    sendTo(socket);
 }
 
 chs::Message IOHandler::getMessage(const chs::Socket &socket) {

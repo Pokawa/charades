@@ -10,6 +10,7 @@
 #include <Message.hpp>
 #include <list>
 #include "Player.hpp"
+#include "cpptime.h"
 
 class Room {
 private:
@@ -22,6 +23,10 @@ private:
     int wordCount;
     bool gameIsActive;
     std::chrono::time_point<std::chrono::system_clock> roundStartTimePoint;
+
+    CppTime::timer_id endOfRoundTimer;
+    CppTime::timer_id halfTheTimeTimer;
+    CppTime::timer_id threeQuartersTimeTimer;
 
 public:
     Room(int roomNumber, Player * owner);
@@ -38,13 +43,15 @@ public:
     [[nodiscard]] std::vector<Player*> getPlayersButOne(Player * player) const;
     [[nodiscard]] std::vector<Player *> getPlayers() const;
     void startRound();
-    Player* getDrawer() const;
-    std::string getCharadesWordMessage() const;
-    bool guessIsClose(const std::string& guess) const;
-    bool guessIsRight(const std::string& guess) const;
-    bool isGameActive() const;
-
-    Player *getOwner();
+    [[nodiscard]] Player* getDrawer() const;
+    [[nodiscard]] std::string getCharadesWordMessage() const;
+    [[nodiscard]] bool guessIsClose(const std::string& guess) const;
+    [[nodiscard]] bool guessIsRight(const std::string& guess) const;
+    [[nodiscard]] bool isGameActive() const;
+    [[nodiscard]] Player *getOwner() const;
+    [[nodiscard]] std::string getCharadesWord() const;
+    void setTheTimers(CppTime::timer_id endOfRoundTimer, CppTime::timer_id halfTheTimeTimer, CppTime::timer_id threeQuartersTimeTimer);
+    void stopTimers(CppTime::Timer& timer);
 
 private:
     [[nodiscard]] std::string getJoinedPLayerNames() const;

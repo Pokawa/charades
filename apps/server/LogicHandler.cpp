@@ -5,6 +5,7 @@
 #include <Message.hpp>
 #include "LogicHandler.hpp"
 
+CppTime::Timer LogicHandler::timer;
 
 LogicHandler::LogicHandler(Player *player) : player(player),
                                              playerName(player->name),
@@ -43,7 +44,8 @@ void LogicHandler::handleMessage(chs::Message message) {
 
             if (roomsHandler.isJoinPossible(roomNumber)) {
                 roomsHandler.joinRoom(roomNumber, player);
-                spdlog::info("{} joined room {}", player->name, roomNumber);
+                spdlog::info("{} joined room {}", playerName, roomNumber);
+                sendServerMessage(fmt::format("{} joined room", playerName));
                 sendInGameInfo();
             } else {
                 sendSimpleRespond(chs::MessageType::ERROR_RESPOND);
@@ -60,8 +62,7 @@ void LogicHandler::handleMessage(chs::Message message) {
             auto &room = player->getRoom();
 
             if (room.getOwner() == player and room.getNumberOfPlayers() >= 2) {
-               startNewRound();
-                //TODO setup timer callbacks
+                startNewRound(room);
             }
         }
             break;
@@ -84,18 +85,15 @@ void LogicHandler::handleMessage(chs::Message message) {
             if (room.isGameActive() and room.getDrawer() != player) {
                 auto players = room.getPlayers();
 
-                auto [chat] = chs::deconstructMessage<std::string>(message);
+                auto[chat] = chs::deconstructMessage<std::string>(message);
                 forwardChatMessage(chat);
-                spdlog::info("Chat message from {}",  playerName);
+                spdlog::info("Chat message from {}", playerName);
 
                 if (room.guessIsRight(chat)) {
                     player->addScore(chat.size());
-                    room.getDrawer()->addScore(chat.size() / 2);
-                    //TODO setup timer callbacks
-                    //TODO check if someone won
+                    room.getDrawer()->addScore(static_cast<int>(chat.size()) / 2);
                     sendSuccessfulGuess(chat);
-                    startNewRound();
-
+                    startNewRound(room);
                 } else if (room.guessIsClose(chat)) {
                     sendCloseGuess(chat);
                 }
@@ -139,13 +137,15 @@ void LogicHandler::safelyQuitRoom() {
 void LogicHandler::safelyQuitRoom(Player *player) {
     if (player->isInRoom()) {
         auto roomNumber = player->getRoom().getRoomNumber();
-        auto& roomsHandler = RoomsHandler::getInstance();
+        auto &roomsHandler = RoomsHandler::getInstance();
 
         spdlog::info("Player {} quit room {}", player->name, roomNumber);
         roomsHandler.quitRoom(player);
 
         if (roomsHandler.roomExists(roomNumber)) {
-            sendInGameInfo(roomsHandler.getRoomByNumber(roomNumber));
+            auto &room = roomsHandler.getRoomByNumber(roomNumber);
+            sendInGameInfo(room);
+            sendServerMessage(room, fmt::format("{} left the room", player->name));
         }
     }
 }
@@ -155,39 +155,70 @@ void LogicHandler::sendInGameInfo(const Room &room) {
     IOHandler::getInstance().putMessage(room.getPlayers(), inGameInfoMessage);
 }
 
-void LogicHandler::forwardChatMessage(const std::string& chat) {
+void LogicHandler::forwardChatMessage(const std::string &chat) {
     auto newChatMessage = chs::constructMessage(chs::MessageType::CHAT_MESSAGE,
                                                 fmt::format("{} : {}", playerName, chat));
     ioHandler.putMessage(player->getRoom().getPlayers(), newChatMessage);
 }
 
-void LogicHandler::startNewRound() {
-    auto &room = player->getRoom();
-
+void LogicHandler::startNewRound(Room &room) {
     room.startRound();
-    sendInGameInfo();
+    room.stopTimers(timer);
+    setTimerCallbacks(room);
+    sendInGameInfo(room);
 
     auto clearDrawingMessage = chs::constructMessage(chs::MessageType::CLEAR_DRAWING);
-    ioHandler.putMessage(room.getPlayers(), clearDrawingMessage);
+    IOHandler::getInstance().putMessage(room.getPlayers(), clearDrawingMessage);
 
     auto newRoundWordMessage = room.getCharadesWordMessage();
-    ioHandler.putMessage(room.getDrawer()->getSocket(), newRoundWordMessage);
+    IOHandler::getInstance().putMessage(room.getDrawer()->getSocket(), newRoundWordMessage);
 }
 
 void LogicHandler::sendSuccessfulGuess(const std::string &guess) {
-    auto guessIsRightMessage = chs::constructMessage(chs::MessageType::SERVER_MESSAGE,
-                                                     fmt::format("{} SUCCEEDED! {}", playerName, guess));
-    ioHandler.putMessage(player->getRoom().getPlayers(), guessIsRightMessage);
+    sendServerMessage(fmt::format("{} SUCCEEDED! {}", playerName, guess));
 }
 
-void LogicHandler::sendCloseGuess(const std::string & guess) {
-    auto guessIsCloseMessage = chs::constructMessage(chs::MessageType::SERVER_MESSAGE,
-                                                     fmt::format("CLOSE ONE! {}", guess));
-    ioHandler.putMessage(player->getRoom().getPlayers(), guessIsCloseMessage);
+void LogicHandler::sendCloseGuess(const std::string &guess) {
+    sendServerMessage(fmt::format("CLOSE ONE! {}", guess));
 }
 
 void LogicHandler::sendSimpleRespond(chs::Socket socket, chs::MessageType type) {
     auto respondMessage = chs::constructMessage(type);
     IOHandler::getInstance().putMessage(socket, respondMessage);
+}
+
+void LogicHandler::setTimerCallbacks(Room &room) {
+    auto endRoundCallback = [&room](CppTime::timer_id) {
+        auto *drawer = room.getDrawer();
+        auto charadesWord = room.getCharadesWord();
+        drawer->setScore(static_cast<int>(charadesWord.size()) / -2);
+
+        sendServerMessage(room, fmt::format("{} FAILED! Word was: {}", drawer->name, charadesWord));
+
+        LogicHandler::startNewRound(room);
+    };
+
+    auto halfTimeCallback = [&room](CppTime::timer_id) {
+        sendServerMessage(room, fmt::format("HINT: {}...", chs::utf8_substr(room.getCharadesWord(), 0, 1)));
+    };
+
+    auto threeQuarterTimeCallback = [&room](CppTime::timer_id) {
+        sendServerMessage(room, fmt::format("HINT: {}...", chs::utf8_substr(room.getCharadesWord(), 0, 2)));
+    };
+
+    auto endOfRoundTimer = timer.add(std::chrono::minutes(3), endRoundCallback);
+    auto halfTheTimeTimer = timer.add(std::chrono::seconds(90), halfTimeCallback);
+    auto threeQuartersTimeTimer = timer.add(std::chrono::seconds(135), threeQuarterTimeCallback);
+
+    room.setTheTimers(endOfRoundTimer, halfTheTimeTimer, threeQuartersTimeTimer);
+}
+
+void LogicHandler::sendServerMessage(const std::string &message) {
+    sendServerMessage(player->getRoom(), message);
+}
+
+void LogicHandler::sendServerMessage(Room &room, const std::string &message) {
+    auto serverMessage = chs::constructMessage(chs::MessageType::SERVER_MESSAGE, message);
+    IOHandler::getInstance().putMessage(room.getPlayers(), serverMessage);
 }
 
