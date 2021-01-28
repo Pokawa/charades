@@ -70,12 +70,9 @@ void Room::quitDrawingQueue(Player *player) {
 
 void Room::nextDrawer() {
     if (not drawingQueue.empty()) {
-        if (drawer == drawingQueue.front()) {
-            drawingQueue.push_back(drawer);
-            drawingQueue.pop_front();
-        } else {
-            drawer = drawingQueue.front();
-        }
+       drawingQueue.push_back(drawer);
+       drawer = drawingQueue.front();
+       drawingQueue.pop_front();
     }
 }
 
