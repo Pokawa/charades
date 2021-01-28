@@ -75,8 +75,8 @@ void CommunicationHandler::handleMessage(chs::Message message) {
             emit drawingCleared();
             break;
         case chs::MessageType::DRAW_LINE: {
-            auto [x1, y1, x2, y2, rgb] = chs::deconstructMessage<int, int, int, int, QRgb>(message);
-            emit linePainted(QPoint(x1, y1), QPoint(x2, y2), QColor(rgb));
+            auto [pt1, pt2, rgb] = chs::deconstructMessage<QPoint, QPoint, QRgb>(message);
+            emit linePainted(pt1, pt2, QColor(rgb));
         }
             break;
         case chs::MessageType::CHAT_MESSAGE: {
@@ -167,7 +167,7 @@ void CommunicationHandler::sendChatMessageRequest(const std::string& message) {
 }
 
 void CommunicationHandler::drawLineRequest(QPoint pt1, QPoint pt2, const QColor& color) {
-    auto drawLineMessage = chs::constructMessage(chs::MessageType::DRAW_LINE, pt1.x(), pt1.y(), pt2.x(), pt2.y(), color.rgb());
+    auto drawLineMessage = chs::constructMessage(chs::MessageType::DRAW_LINE, pt1, pt2, color.rgb());
     sendMessage(drawLineMessage);
 }
 

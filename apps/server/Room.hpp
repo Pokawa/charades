@@ -44,6 +44,8 @@ public:
     bool guessIsRight(const std::string& guess) const;
     bool isGameActive() const;
 
+    Player *getOwner();
+
 private:
     [[nodiscard]] std::string getJoinedPLayerNames() const;
     [[nodiscard]] std::string getJoinedPlayerScores() const;

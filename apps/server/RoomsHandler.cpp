@@ -57,5 +57,5 @@ RoomsHandler &RoomsHandler::getInstance() {
 }
 
 bool RoomsHandler::isJoinPossible(int roomNumber) {
-    return roomExists(roomNumber) and getRoomByNumber(roomNumber).isGameActive();
+    return roomExists(roomNumber) and not getRoomByNumber(roomNumber).isGameActive();
 }

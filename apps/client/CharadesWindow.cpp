@@ -7,7 +7,6 @@
 CharadesWindow::CharadesWindow(QWidget *parent) :
         QMainWindow(parent),
         ui(new Ui::CharadesWindow),
-        gameState(GameState::WAITING_FOR_INFO),
         numberOfPlayers(0)
 {
     ui->setupUi(this);
@@ -125,6 +124,7 @@ void CharadesWindow::handleInGameInfoRespond(chs::Message message) {
 
     if (gameIsActive) {
         roundStartingPoint = startPoint;
+        disableRoomControls();
 
         if (drawer == username) {
             ui->colorButton->setEnabled(true);
@@ -132,12 +132,9 @@ void CharadesWindow::handleInGameInfoRespond(chs::Message message) {
             ui->drawWidget->setEnabled(true);
         } else {
             ui->charadesLabel->setText(QString::fromStdString(fmt::format("Number of words: {} currently drawing: {}", wordCount, drawer)));
-            disableRoomControls();
             ui->chatInput->setEnabled(true);
         }
 
-        ui->startButton->setDisabled(true);
-        gameState = GameState::PLAYING;
     }
 
     auto names = chs::explodeJoinedString(joinedNames, ';');
@@ -157,9 +154,8 @@ void CharadesWindow::handleInGameInfoRespond(chs::Message message) {
     numberOfPlayers = names.size();
 
     if (not gameIsActive) {
-        ui->chatInput->setDisabled(true);
+        disableRoomControls();
         ui->charadesLabel->clear();
-        gameState = GameState::WAITING_FOR_START;
 
         if (owner == username and numberOfPlayers >= 2) {
             ui->startButton->setEnabled(true);

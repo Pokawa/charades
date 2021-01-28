@@ -132,4 +132,8 @@ bool Room::isGameActive() const {
     return gameIsActive;
 }
 
+Player *Room::getOwner() {
+    return owner;
+}
+
 

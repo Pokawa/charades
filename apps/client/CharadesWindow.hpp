@@ -17,11 +17,7 @@ class CharadesWindow : public QMainWindow
     std::chrono::time_point<std::chrono::system_clock> roundStartingPoint;
     std::string username;
     int numberOfPlayers;
-    enum class GameState {
-        PLAYING,
-        WAITING_FOR_INFO,
-        WAITING_FOR_START
-    } gameState;
+
 
 public:
     explicit CharadesWindow(QWidget *parent = nullptr);

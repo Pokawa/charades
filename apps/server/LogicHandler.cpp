@@ -59,7 +59,7 @@ void LogicHandler::handleMessage(chs::Message message) {
         case chs::MessageType::START_GAME_REQUEST: {
             auto &room = player->getRoom();
 
-            if (room.getNumberOfPlayers() >= 2) {
+            if (room.getOwner() == player and room.getNumberOfPlayers() >= 2) {
                startNewRound();
                 //TODO setup timer callbacks
             }
@@ -80,35 +80,42 @@ void LogicHandler::handleMessage(chs::Message message) {
             break;
         case chs::MessageType::CHAT_MESSAGE: {
             auto &room = player->getRoom();
-            auto players = room.getPlayers();
 
-            auto [chat] = chs::deconstructMessage<std::string>(message);
-            forwardChatMessage(chat);
-            spdlog::info("Chat message from {}",  playerName);
+            if (room.isGameActive() and room.getDrawer() != player) {
+                auto players = room.getPlayers();
 
-            if (room.guessIsRight(chat)) {
-                player->addScore(chat.size());
-                room.getDrawer()->addScore(chat.size() / 2);
-                //TODO setup timer callbacks
-                //TODO check if someone won
-                sendSuccessfulGuess(chat);
-                startNewRound();
+                auto [chat] = chs::deconstructMessage<std::string>(message);
+                forwardChatMessage(chat);
+                spdlog::info("Chat message from {}",  playerName);
 
-            } else if (room.guessIsClose(chat)) {
-                sendCloseGuess(chat);
+                if (room.guessIsRight(chat)) {
+                    player->addScore(chat.size());
+                    room.getDrawer()->addScore(chat.size() / 2);
+                    //TODO setup timer callbacks
+                    //TODO check if someone won
+                    sendSuccessfulGuess(chat);
+                    startNewRound();
+
+                } else if (room.guessIsClose(chat)) {
+                    sendCloseGuess(chat);
+                }
             }
         }
             break;
         case chs::MessageType::DRAW_LINE: {
-            auto players = player->getRoom().getPlayersButOne(player);
-            auto renewedMessage = chs::addSizeToMessage(message);
-            ioHandler.putMessage(players, renewedMessage);
+            if (player->getRoom().getDrawer() == player) {
+                auto players = player->getRoom().getPlayersButOne(player);
+                auto renewedMessage = chs::addSizeToMessage(message);
+                ioHandler.putMessage(players, renewedMessage);
+            }
         }
             break;
         case chs::MessageType::CLEAR_DRAWING: {
-            auto players = player->getRoom().getPlayersButOne(player);
-            auto renewedMessage = chs::addSizeToMessage(message);
-            ioHandler.putMessage(players, renewedMessage);
+            if (player->getRoom().getDrawer() == player) {
+                auto players = player->getRoom().getPlayersButOne(player);
+                auto renewedMessage = chs::addSizeToMessage(message);
+                ioHandler.putMessage(players, renewedMessage);
+            }
         }
             break;
         default:
