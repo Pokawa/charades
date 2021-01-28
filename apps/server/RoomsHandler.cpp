@@ -28,6 +28,7 @@ void RoomsHandler::quitRoom(Player *player) {
         room.removePlayer(player);
 
         if (room.getNumberOfPlayers() == 0) {
+            spdlog::info("Removed room {}", room.getRoomNumber());
             rooms.erase(findRoomByNumber(room.getRoomNumber()));
         }
     }
@@ -53,4 +54,8 @@ RoomsHandler &RoomsHandler::getInstance() {
         instance = std::make_unique<RoomsHandler>();
     }
     return *instance;
+}
+
+bool RoomsHandler::isJoinPossible(int roomNumber) {
+    return roomExists(roomNumber) and getRoomByNumber(roomNumber).isGameActive();
 }

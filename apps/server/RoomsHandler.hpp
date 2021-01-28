@@ -28,6 +28,7 @@ public:
     std::vector<chs::Message> getRoomsInfo();
     Room& getRoomByNumber(int roomNumber);
     bool roomExists(int roomNumber);
+    bool isJoinPossible(int roomNumber);
 
 private:
     std::vector<Room>::iterator findRoomByNumber(int roomNumber);

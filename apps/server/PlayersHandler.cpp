@@ -42,3 +42,11 @@ std::list<Player>::iterator PlayersHandler::getPlayerPosition(const chs::Socket 
 bool PlayersHandler::clientIsLoggedIn(const chs::Socket &socket) {
     return getPlayerPosition(socket) != players.end();
 }
+
+std::vector<Player *> PlayersHandler::getPlayers() {
+    std::vector<Player*> vec;
+    auto getPlayerAddr = [](Player& player){ return &player; };
+    std::transform(players.begin(), players.end(), std::back_inserter(vec), getPlayerAddr);
+    return vec;
+}
+

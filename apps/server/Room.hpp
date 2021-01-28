@@ -34,14 +34,15 @@ public:
     int getInDrawingQueue(Player * player);
     void quitDrawingQueue(Player * player);
     void nextDrawer();
-    [[nodiscard]] int getNumberOfPlayers();
-    [[nodiscard]] std::vector<Player*> getPlayersButOne(Player * player);
-    [[nodiscard]] std::vector<Player *> getPlayers();
+    [[nodiscard]] int getNumberOfPlayers() const;
+    [[nodiscard]] std::vector<Player*> getPlayersButOne(Player * player) const;
+    [[nodiscard]] std::vector<Player *> getPlayers() const;
     void startRound();
-    Player* getDrawer();
-    std::string getCharadesWordMessage();
-    bool guessIsClose(const std::string& guess);
-    bool guessIsRight(const std::string& guess);
+    Player* getDrawer() const;
+    std::string getCharadesWordMessage() const;
+    bool guessIsClose(const std::string& guess) const;
+    bool guessIsRight(const std::string& guess) const;
+    bool isGameActive() const;
 
 private:
     [[nodiscard]] std::string getJoinedPLayerNames() const;

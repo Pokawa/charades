@@ -25,6 +25,7 @@ public:
     static PlayersHandler& getInstance();
 
 
+    std::vector<Player*> getPlayers();
     void addPlayer(const std::string& name, const chs::Socket& webSocket);
     void removePlayer(const chs::Socket & socket);
     bool clientIsLoggedIn(const chs::Socket & socket);

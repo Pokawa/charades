@@ -7,6 +7,7 @@
 #include "IOHandler.hpp"
 #include "PlayersHandler.hpp"
 #include "RoomsHandler.hpp"
+#include "LogicHandler.hpp"
 
 int main(int argc, char** argv){
     if(argc != 2) {
@@ -18,7 +19,6 @@ int main(int argc, char** argv){
     connectionHandler.openServer();
     auto & ioHandler = IOHandler::getInstance();
     auto & playersHandler = PlayersHandler::getInstance();
-    auto & roomsHandler = RoomsHandler::getInstance();
 
     while(true) {
         auto pollSockets = ConnectionHandler::getInstance().getPollSockets();
@@ -40,179 +40,40 @@ int main(int argc, char** argv){
             }
         }
 
+        for (auto* player : playersHandler.getPlayers()) {
+            LogicHandler logicHandler{player};
+            while (ioHandler.isMessageToGet(player->getSocket())){
+                auto message = ioHandler.getMessage(player->getSocket());
+                logicHandler.handleMessage(std::move(message));
+            }
+        }
+
         for (int i = 1; i < pollSockets.size(); ++i) {
             auto client = connectionHandler.getSocket(pollSockets[i].fd);
-
             while (ioHandler.isMessageToGet(client)) {
                 auto message = ioHandler.getMessage(client);
-                auto type = chs::getMessageType(message);
 
-                if (type == chs::MessageType::LOG_IN_REQUEST) {
-                    auto [name] = chs::deconstructMessage<std::string>(message);
+                switch (chs::getMessageType(message)) {
+                    case chs::MessageType::LOG_IN_REQUEST: {
+                        auto [name] = chs::deconstructMessage<std::string>(message);
 
-                    if (playersHandler.isNameAvailable(name)){
-                        playersHandler.addPlayer(name, client);
-                        spdlog::info("Logged in player: {} from: {}", name, client.getAddress());
-                        auto respondMessage = chs::constructMessage(chs::MessageType::OK_RESPOND);
-                        ioHandler.putMessage(client, respondMessage);
-                    } else {
-                        spdlog::info("Refused player: {} from: {}; Name in use", name, client.getAddress());
-                        auto respondMessage = chs::constructMessage(chs::MessageType::ERROR_RESPOND);
-                        ioHandler.putMessage(client, respondMessage);
-                    }
-                }
-
-                if (type == chs::MessageType::ROOMS_INFO_REQUEST) {
-                    auto roomsInfo = roomsHandler.getRoomsInfo();
-                    ioHandler.putMessages(client, roomsInfo);
-                    spdlog::info("Sent rooms info to: {}", client.getAddress());
-                }
-
-                if (type == chs::MessageType::NEW_ROOM_REQUEST) {
-                    auto& player = playersHandler.getPlayer(client);
-                    roomsHandler.newRoom(&player);
-                    spdlog::info("Created new room for: {}[{}]", player.name, client.getAddress());
-
-                    auto inGameInfoMessage = player.getRoom().getInGameInfo();
-                    ioHandler.putMessage(player.getRoom().getPlayers(), inGameInfoMessage);
-                }
-
-                if (type == chs::MessageType::JOIN_ROOM_REQUEST) {
-                    auto& player = playersHandler.getPlayer(client);
-                    auto [roomNumber] = chs::deconstructMessage<int>(message);
-
-                    if (roomsHandler.roomExists(roomNumber)) {
-                        auto respondMessage = chs::constructMessage(chs::MessageType::OK_RESPOND);
-                        ioHandler.putMessage(client, respondMessage);
-                        roomsHandler.joinRoom(roomNumber, &player);
-                        spdlog::info("{} joined room {}", player.name, roomNumber);
-
-                        auto inGameInfoMessage = player.getRoom().getInGameInfo();
-                        ioHandler.putMessage(player.getRoom().getPlayers(), inGameInfoMessage);
-                    } else {
-                        auto respondMessage = chs::constructMessage(chs::MessageType::ERROR_RESPOND);
-                        ioHandler.putMessage(client, respondMessage);
-                        spdlog::warn("{} failed to join room {}: room not found", player.name, roomNumber);
-                    }
-
-                }
-
-                if (type == chs::MessageType::QUIT_ROOM_REQUEST) {
-                    auto& player = playersHandler.getPlayer(client);
-                    auto roomNumber = player.getRoom().getRoomNumber();
-                    spdlog::info("Player {} quit room {}", player.name, roomNumber);
-                    roomsHandler.quitRoom(&player);
-                    if (roomsHandler.roomExists(roomNumber)) {
-                        auto& room = roomsHandler.getRoomByNumber(roomNumber);
-                        auto inGameInfoMessage = room.getInGameInfo();
-                        ioHandler.putMessage(room.getPlayers(), inGameInfoMessage);
-                    }
-                }
-
-                if (type == chs::MessageType::LOG_OUT_REQUEST) {
-                    if (playersHandler.clientIsLoggedIn(client)) {
-                        auto& player = playersHandler.getPlayer(client);
-
-                        if (player.isInRoom()) {
-                            auto roomNumber = player.getRoom().getRoomNumber();
-                            spdlog::info("Player {} quit room {}", player.name, roomNumber);
-                            roomsHandler.quitRoom(&player);
-                            if (roomsHandler.roomExists(roomNumber)) {
-
-                                auto& room = roomsHandler.getRoomByNumber(roomNumber);
-                                auto inGameInfoMessage = room.getInGameInfo();
-                                ioHandler.putMessage(room.getPlayers(), inGameInfoMessage);
-                            }
+                        if (playersHandler.isNameAvailable(name)){
+                            playersHandler.addPlayer(name, client);
+                            spdlog::info("Logged in player: {} on {}", name, client.getPort());
+                            LogicHandler::sendSimpleRespond(client, chs::MessageType::OK_RESPOND);
+                        } else {
+                            spdlog::info("Refused player: {} on {}; Name in use", name, client.getPort());
+                            LogicHandler::sendSimpleRespond(client, chs::MessageType::ERROR_RESPOND);
                         }
-
-                        playersHandler.removePlayer(client);
-                        spdlog::info("Removed player: {}", player.name);
                     }
-
-                    connectionHandler.closeClient(client);
-                    spdlog::info("Log out from: {}", client.getAddress());
-                    continue;
-                }
-
-                if (type == chs::MessageType::CHAT_MESSAGE) {
-                    auto& player = playersHandler.getPlayer(client);
-                    auto& room = player.getRoom();
-                    auto players = room.getPlayers();
-
-                    auto [chat] = chs::deconstructMessage<std::string>(message);
-                    auto newChatMessage = chs::constructMessage(chs::MessageType::CHAT_MESSAGE,
-                                                                fmt::format("{} : {}", player.name, chat));
-
-                    spdlog::info("Chat message {} from {}", chat, player.name);
-                    ioHandler.putMessage(players, newChatMessage);
-
-                    if (room.guessIsRight(chat)) {
-                        auto guessIsRightMessage = chs::constructMessage(chs::MessageType::SERVER_MESSAGE,
-                                                                         fmt::format("{} SUCCEEDED! {}", player.name, chat));
-                        ioHandler.putMessage(players, guessIsRightMessage);
-                        player.addScore(chat.size());
-                        room.getDrawer()->addScore(chat.size() / 2);
-                        //TODO setup timer callbacks
-                        //TODO check if someone won
-
-                        room.startRound();
-                        auto inGameInfoMessage = room.getInGameInfo();
-                        ioHandler.putMessage(players, inGameInfoMessage);
-
-                        auto clearDrawingMessage = chs::constructMessage(chs::MessageType::CLEAR_DRAWING);
-                        ioHandler.putMessage(players, clearDrawingMessage);
-
-                        auto newRoundWordMessage = room.getCharadesWordMessage();
-                        ioHandler.putMessage(room.getDrawer()->getSocket(), newRoundWordMessage);
-
-                    } else if (room.guessIsClose(chat)) {
-                        auto guessIsCloseMessage = chs::constructMessage(chs::MessageType::SERVER_MESSAGE,
-                                                                        fmt::format("CLOSE ONE! {}", chat));
-                        ioHandler.putMessage(players, guessIsCloseMessage);
+                        break;
+                    case chs::MessageType::LOG_OUT_REQUEST: {
+                        connectionHandler.closeClient(client);
+                        spdlog::info("Log out from: {}", client.getPort());
                     }
                 }
 
-                if (type == chs::MessageType::DRAW_LINE) {
-                    auto& player = playersHandler.getPlayer(client);
-                    auto players = player.getRoom().getPlayersButOne(&player);
-                    auto renewedMessage = chs::addSizeToMessage(message);
-                    ioHandler.putMessage(players, renewedMessage);
-                }
 
-                if (type == chs::MessageType::CLEAR_DRAWING) {
-                    auto& player = playersHandler.getPlayer(client);
-                    auto players = player.getRoom().getPlayersButOne(&player);
-                    auto renewedMessage = chs::addSizeToMessage(message);
-                    ioHandler.putMessage(players, renewedMessage);
-                }
-
-                if (type == chs::MessageType::ENTER_DRAWING_QUEUE_REQUEST) {
-                    auto& player = playersHandler.getPlayer(client);
-                    auto position = player.getRoom().getInDrawingQueue(&player);
-                    auto respondMessage = chs::constructMessage(chs::MessageType::SERVER_MESSAGE,
-                                                                fmt::format("You are {} in queue", position));
-                    spdlog::info("{} entered drawing queue as {}", player.name, position);
-                    ioHandler.putMessage(player.getSocket(), respondMessage);
-                }
-
-                if (type == chs::MessageType::QUIT_DRAWING_QUEUE_REQUEST) {
-                    auto& player = playersHandler.getPlayer(client);
-                    player.getRoom().quitDrawingQueue(&player);
-                    spdlog::info("{} left drawing queue", player.name);
-                }
-
-                if (type == chs::MessageType::START_GAME_REQUEST) {
-                    auto& player = playersHandler.getPlayer(client);
-                    auto& room = player.getRoom();
-
-                    if (room.getNumberOfPlayers() >= 2) {
-                        room.startRound();
-                        auto inGameInfoMessage = room.getInGameInfo();
-                        ioHandler.putMessage(room.getPlayers(), inGameInfoMessage);
-                        ioHandler.putMessage(room.getDrawer()->getSocket(), room.getCharadesWordMessage());
-                        //TODO setup timer callbacks
-                    }
-                }
             }
         }
 

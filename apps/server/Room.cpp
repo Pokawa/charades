@@ -55,7 +55,7 @@ void Room::setOwner(Player* player) {
     owner = player;
 }
 
-int Room::getNumberOfPlayers() {
+int Room::getNumberOfPlayers() const {
     return players.size();
 }
 
@@ -79,13 +79,13 @@ void Room::nextDrawer() {
     }
 }
 
-std::vector<Player *> Room::getPlayersButOne(Player * player) {
+std::vector<Player *> Room::getPlayersButOne(Player * player) const {
     std::vector<Player *> buffer(players.begin(), players.end());
     buffer.erase(std::find(buffer.begin(), buffer.end(), player));
     return buffer;
 }
 
-std::vector<Player *> Room::getPlayers() {
+std::vector<Player *> Room::getPlayers() const {
     std::vector<Player *> vec(players.begin(), players.end());
     return vec;
 }
@@ -112,20 +112,24 @@ void Room::startRound() {
     nextDrawer();
 }
 
-Player *Room::getDrawer() {
+Player *Room::getDrawer() const {
     return drawer;
 }
 
-std::string Room::getCharadesWordMessage() {
+std::string Room::getCharadesWordMessage() const {
     return chs::constructMessage(chs::MessageType::CHARADES_WORD_RESPOND, charadesWord);
 }
 
-bool Room::guessIsClose(const std::string& guess) {
+bool Room::guessIsClose(const std::string& guess) const {
     return guess.length() >= 3 and charadesWord.find(guess) != std::string::npos;
 }
 
-bool Room::guessIsRight(const std::string& guess) {
+bool Room::guessIsRight(const std::string& guess) const {
     return charadesWord == guess;
+}
+
+bool Room::isGameActive() const {
+    return gameIsActive;
 }
 
 
