@@ -68,6 +68,13 @@ void LogicHandler::handleMessage(chs::Message message) {
             }
         }
             break;
+        case chs::MessageType::STOP_GAME_REQUEST: {
+            auto &room = player->getRoom();
+            room.stopGame();
+            sendInGameInfo(room);
+            sendServerMessage(room, fmt::format("{} stopped the game", playerName));
+            spdlog::info("Stopped game in room {}", room.getRoomNumber());
+        }
         case chs::MessageType::ENTER_DRAWING_QUEUE_REQUEST: {
             auto position = player->getRoom().getInDrawingQueue(player);
             auto respondMessage = chs::constructMessage(chs::MessageType::SERVER_MESSAGE,
@@ -142,12 +149,18 @@ void LogicHandler::safelyQuitRoom(Player *player) {
         auto &roomsHandler = RoomsHandler::getInstance();
 
         spdlog::info("Player {} quit room {}", player->name, roomNumber);
+        auto* drawer = player->getRoom().getDrawer();
         roomsHandler.quitRoom(player);
 
         if (roomsHandler.roomExists(roomNumber)) {
             auto &room = roomsHandler.getRoomByNumber(roomNumber);
-            sendInGameInfo(room);
             sendServerMessage(room, fmt::format("{} left the room", player->name));
+
+            if (drawer == player) {
+                startNewRound(room);
+            }  else {
+                sendInGameInfo(room);
+            }
         }
     }
 }

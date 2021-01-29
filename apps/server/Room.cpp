@@ -22,12 +22,8 @@ void Room::removePlayer(Player* player) {
         setOwner(players.front());
     }
 
-    if (player == drawer) {
-        if (drawingQueue.empty()) {
-            drawer = owner;
-        } else {
-            nextDrawer();
-        }
+    if (player == drawer and drawingQueue.empty()) {
+        drawer = owner;
     }
 
     if (getNumberOfPlayers() < 2) {

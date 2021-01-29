@@ -44,6 +44,7 @@ public slots:
     void exitRoomRequest();
     void newRoomRequest();
     void startGameRequest();
+    void stopGameRequest();
     void enterDrawingQueueRequest();
     void leaveDrawingQueueRequest();
     void sendChatMessageRequest(const std::string& message);

@@ -84,7 +84,13 @@ void CharadesWindow::on_exitButton_clicked()
 
 void CharadesWindow::on_startButton_clicked()
 {
-    communicationHandler->startGameRequest();
+    if (ui->startButton->text() == "Start game") {
+        communicationHandler->startGameRequest();
+    }
+
+    if (ui->startButton->text() == "Stop game") {
+        communicationHandler->stopGameRequest();
+    }
 }
 
 void CharadesWindow::on_clearButton_clicked()
@@ -141,6 +147,11 @@ void CharadesWindow::handleInGameInfoRespond(chs::Message message) {
             labelUpdater = timer.add(std::chrono::seconds(0), updateLabel, std::chrono::seconds(1));
         }
         disableRoomControls();
+
+        if (owner == username) {
+            ui->startButton->setText("Stop game");
+            ui->startButton->setEnabled(true);
+        }
 
         if (drawer == username) {
             ui->colorButton->setEnabled(true);

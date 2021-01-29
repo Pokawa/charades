@@ -198,3 +198,7 @@ void CommunicationHandler::drawLineRequest(QPoint pt1, QPoint pt2, const QColor&
 void CommunicationHandler::clearRequest() {
     sendRequest(chs::MessageType::CLEAR_DRAWING);
 }
+
+void CommunicationHandler::stopGameRequest() {
+    sendRequest(chs::MessageType::STOP_GAME_REQUEST);
+}
