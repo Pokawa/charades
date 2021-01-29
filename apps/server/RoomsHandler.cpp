@@ -27,6 +27,10 @@ void RoomsHandler::quitRoom(Player *player) {
         auto& room = player->getRoom();
         room.removePlayer(player);
 
+        if (room.getNumberOfPlayers() < 2) {
+            room.stopGame();
+        }
+
         if (room.getNumberOfPlayers() == 0) {
             spdlog::info("Removed room {}", room.getRoomNumber());
             rooms.erase(findRoomByNumber(room.getRoomNumber()));

@@ -52,6 +52,7 @@ public:
     [[nodiscard]] std::string getCharadesWord() const;
     void setTheTimers(CppTime::timer_id endOfRoundTimer, CppTime::timer_id halfTheTimeTimer, CppTime::timer_id threeQuartersTimeTimer);
     void stopTimers(CppTime::Timer& timer);
+    void stopGame();
 
 private:
     [[nodiscard]] std::string getJoinedPLayerNames() const;

@@ -32,9 +32,6 @@ void Room::removePlayer(Player* player) {
 
     if (getNumberOfPlayers() < 2) {
         gameIsActive = false;
-        for (auto* roomMember : players) {
-            roomMember->setScore(0);
-        }
     }
 }
 
@@ -82,9 +79,9 @@ void Room::quitDrawingQueue(Player *player) {
 
 void Room::nextDrawer() {
     if (not drawingQueue.empty()) {
-       drawingQueue.push_back(drawer);
-       drawer = drawingQueue.front();
-       drawingQueue.pop_front();
+        drawer = drawingQueue.front();
+        drawingQueue.push_back(drawer);
+        drawingQueue.pop_front();
     }
 }
 
@@ -160,6 +157,14 @@ void Room::setTheTimers(CppTime::timer_id endTimer, CppTime::timer_id halfTimer,
 
 std::string Room::getCharadesWord() const {
     return charadesWord;
+}
+
+void Room::stopGame() {
+    gameIsActive = false;
+    for (auto* roomMember : players) {
+        roomMember->setScore(0);
+    }
+    stopTimers(LogicHandler::timer);
 }
 
 
