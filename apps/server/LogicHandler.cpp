@@ -164,6 +164,8 @@ void LogicHandler::forwardChatMessage(const std::string &chat) {
 }
 
 void LogicHandler::startNewRound(Room &room) {
+    spdlog::info("Starting new round in room {}", room.getRoomNumber());
+
     room.startRound();
     room.stopTimers(timer);
     setTimerCallbacks(room);
@@ -191,6 +193,8 @@ void LogicHandler::sendSimpleRespond(chs::Socket socket, chs::MessageType type) 
 
 void LogicHandler::setTimerCallbacks(Room &room) {
     auto endRoundCallback = [&room](CppTime::timer_id) {
+        spdlog::info("End of round callback invoked in room {}", room.getRoomNumber());
+
         auto *drawer = room.getDrawer();
         auto charadesWord = room.getCharadesWord();
         drawer->setScore(static_cast<int>(charadesWord.size()) / -2);
@@ -201,14 +205,16 @@ void LogicHandler::setTimerCallbacks(Room &room) {
     };
 
     auto halfTimeCallback = [&room](CppTime::timer_id) {
+        spdlog::info("Sent first hint to room {}", room.getRoomNumber());
         sendServerMessage(room, fmt::format("HINT: {}...", chs::utf8_substr(room.getCharadesWord(), 0, 1)));
     };
 
     auto threeQuarterTimeCallback = [&room](CppTime::timer_id) {
+        spdlog::info("Sent second hint to room {}", room.getRoomNumber());
         sendServerMessage(room, fmt::format("HINT: {}...", chs::utf8_substr(room.getCharadesWord(), 0, 2)));
     };
 
-    auto endOfRoundTimer = timer.add(std::chrono::minutes(3), endRoundCallback);
+    auto endOfRoundTimer = timer.add(std::chrono::seconds(180), endRoundCallback);
     auto halfTheTimeTimer = timer.add(std::chrono::seconds(90), halfTimeCallback);
     auto threeQuartersTimeTimer = timer.add(std::chrono::seconds(135), threeQuarterTimeCallback);
 
