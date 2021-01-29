@@ -52,6 +52,9 @@ public:
     [[nodiscard]] std::string getCharadesWord() const;
     void setTheTimers(CppTime::timer_id endOfRoundTimer, CppTime::timer_id halfTheTimeTimer, CppTime::timer_id threeQuartersTimeTimer);
     void stopTimers(CppTime::Timer& timer);
+    void setEndTimerAsInvoked();
+    void setHalfTimerAsInvoked();
+    void setQuarterTimerAsInvoked();
     void stopGame();
 
 private:

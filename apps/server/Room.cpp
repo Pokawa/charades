@@ -167,4 +167,16 @@ void Room::stopGame() {
     stopTimers(LogicHandler::timer);
 }
 
+void Room::setEndTimerAsInvoked() {
+    endOfRoundTimer = -1;
+}
+
+void Room::setHalfTimerAsInvoked() {
+    halfTheTimeTimer = -1;
+}
+
+void Room::setQuarterTimerAsInvoked() {
+    threeQuartersTimeTimer = -1;
+}
+
 

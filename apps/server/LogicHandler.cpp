@@ -201,16 +201,20 @@ void LogicHandler::setTimerCallbacks(Room &room) {
 
         sendServerMessage(room, fmt::format("{} FAILED! Word was: {}", drawer->name, charadesWord));
 
+        room.setEndTimerAsInvoked();
+
         LogicHandler::startNewRound(room);
     };
 
     auto halfTimeCallback = [&room](CppTime::timer_id) {
         spdlog::info("Sent first hint to room {}", room.getRoomNumber());
+        room.setHalfTimerAsInvoked();
         sendServerMessage(room, fmt::format("HINT: {}...", chs::utf8_substr(room.getCharadesWord(), 0, 1)));
     };
 
     auto threeQuarterTimeCallback = [&room](CppTime::timer_id) {
         spdlog::info("Sent second hint to room {}", room.getRoomNumber());
+        room.setQuarterTimerAsInvoked();
         sendServerMessage(room, fmt::format("HINT: {}...", chs::utf8_substr(room.getCharadesWord(), 0, 2)));
     };
 

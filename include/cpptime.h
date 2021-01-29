@@ -224,6 +224,7 @@ public:
 		return id;
 	}
 
+
 	/**
 	 * Overloaded `add` function that uses a `std::chrono::duration` instead of a
 	 * `time_point` for the first timeout.
@@ -265,6 +266,7 @@ public:
 		cond.notify_all();
 		return true;
 	}
+
 
 private:
 	void run()
