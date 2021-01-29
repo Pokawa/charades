@@ -49,6 +49,7 @@ public slots:
     void leaveDrawingQueueRequest();
     void sendChatMessageRequest(const std::string& message);
     void clearRequest();
+    void logOut();
 
 signals:
     void loginSuccessful();

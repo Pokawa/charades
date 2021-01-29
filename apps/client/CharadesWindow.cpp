@@ -3,6 +3,7 @@
 #include <fmt/format.h>
 #include <QColorDialog>
 #include <utility>
+#include <QMessageBox>
 
 CharadesWindow::CharadesWindow(QWidget *parent) :
         QMainWindow(parent),
@@ -186,6 +187,7 @@ void CharadesWindow::handleInGameInfoRespond(chs::Message message) {
         timer.remove(labelUpdater);
         ui->timeLabel->setText("3:00");
         ui->drawWidget->clear();
+        ui->startButton->setText("Start game");
 
         if (owner == username and numberOfPlayers >= 2) {
             ui->startButton->setEnabled(true);
@@ -225,5 +227,18 @@ void CharadesWindow::on_chatInput_returnPressed()
     if (!input.isEmpty()) {
         communicationHandler->sendChatMessageRequest(input.toStdString());
         ui->chatInput->clear();
+    }
+}
+
+void CharadesWindow::closeEvent(QCloseEvent *event) {
+    QMessageBox::StandardButton resBtn = QMessageBox::question( this, "Close",
+                                                                tr("Are you sure?\n"),
+                                                                QMessageBox::Cancel | QMessageBox::No | QMessageBox::Yes,
+                                                                QMessageBox::Yes);
+    if (resBtn != QMessageBox::Yes) {
+        event->ignore();
+    } else {
+        communicationHandler->logOut();
+        event->accept();
     }
 }

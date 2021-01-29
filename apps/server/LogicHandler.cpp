@@ -75,6 +75,7 @@ void LogicHandler::handleMessage(chs::Message message) {
             sendServerMessage(room, fmt::format("{} stopped the game", playerName));
             spdlog::info("Stopped game in room {}", room.getRoomNumber());
         }
+            break;
         case chs::MessageType::ENTER_DRAWING_QUEUE_REQUEST: {
             auto position = player->getRoom().getInDrawingQueue(player);
             auto respondMessage = chs::constructMessage(chs::MessageType::SERVER_MESSAGE,
@@ -156,7 +157,7 @@ void LogicHandler::safelyQuitRoom(Player *player) {
             auto &room = roomsHandler.getRoomByNumber(roomNumber);
             sendServerMessage(room, fmt::format("{} left the room", player->name));
 
-            if (drawer == player) {
+            if (drawer == player and room.isGameActive()) {
                 startNewRound(room);
             }  else {
                 sendInGameInfo(room);

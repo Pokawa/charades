@@ -45,8 +45,8 @@ CommunicationHandler::CommunicationHandler(int socketFD) : socketFD(socketFD),
                                                            asyncMessageReceiver(socketFD),
                                                            outgoingMessageQueue(chs::Socket(socketFD, {})) {
     connect(&asyncMessageReceiver, &MessageReceiver::messageReceived, this, &CommunicationHandler::handleMessage);
-    asyncMessageReceiver.start();
     connect(&asyncMessageReceiver, &MessageReceiver::serverHangUp, this, &CommunicationHandler::connectionLost);
+    asyncMessageReceiver.start();
 }
 
 void CommunicationHandler::handleMessage(chs::Message message) {
@@ -138,7 +138,6 @@ CommunicationHandler::~CommunicationHandler() {
 
 void CommunicationHandler::disconnectFromHost() {
     stopMessageReceiver();
-    sendRequest(chs::MessageType::LOG_OUT_REQUEST);
     close(socketFD);
 }
 
@@ -201,4 +200,9 @@ void CommunicationHandler::clearRequest() {
 
 void CommunicationHandler::stopGameRequest() {
     sendRequest(chs::MessageType::STOP_GAME_REQUEST);
+}
+
+void CommunicationHandler::logOut() {
+    sendRequest(chs::MessageType::LOG_OUT_REQUEST);
+    disconnectFromHost();
 }

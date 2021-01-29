@@ -39,10 +39,6 @@ void ConnectDialog::on_connectButton_clicked()
     auto host = ui->addressInput->text().toStdString();
     auto port = ui->portInput->value();
 
-    if (communicationHandler != nullptr) {
-        communicationHandler->disconnectFromHost();
-    }
-
     auto ret = CommunicationHandler::connectToHost(host, port);
     if (ret == -1) {
         ui->respondLabel->setText(strerror(errno));

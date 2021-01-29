@@ -44,6 +44,9 @@ private slots:
     void printCharadesWordForDrawer(const std::string& message);
     void on_chatInput_returnPressed();
 
+protected:
+    void closeEvent(QCloseEvent *event) override;
+
 private:
     Ui::CharadesWindow *ui;
 
