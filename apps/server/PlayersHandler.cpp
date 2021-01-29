@@ -51,3 +51,7 @@ std::vector<Player *> PlayersHandler::getPlayers() {
     return vec;
 }
 
+bool PlayersHandler::isNameValid(const std::string &name) {
+    return not name.empty() and name.find(';') == std::string::npos and isNameAvailable(name);
+}
+

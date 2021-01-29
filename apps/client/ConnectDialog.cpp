@@ -19,6 +19,22 @@ ConnectDialog::~ConnectDialog()
 void ConnectDialog::on_connectButton_clicked()
 {
     ui->respondLabel->setText("");
+    auto username = ui->usernameInput->text().toStdString();
+
+    if (username.find(';') != std::string::npos) {
+        ui->respondLabel->setText("Invalid username, semicolon is forbidden");
+        return;
+    }
+
+    if (username.find(' ') != std::string::npos) {
+        ui->respondLabel->setText("Invalid username, spaces are forbidden");
+        return;
+    }
+
+    if (username.empty()) {
+        ui->respondLabel->setText("Invalid username");
+        return;
+    }
 
     auto host = ui->addressInput->text().toStdString();
     auto port = ui->portInput->value();
@@ -37,12 +53,6 @@ void ConnectDialog::on_connectButton_clicked()
     connect(communicationHandler.get(), &CommunicationHandler::loginSuccessful, this, &ConnectDialog::accept);
     connect(communicationHandler.get(), &CommunicationHandler::loginFailed, [this](){ this->ui->respondLabel->setText("Login failed, username in use"); });
 
-    auto username = ui->usernameInput->text().toStdString();
-
-    if (username.find(';') != std::string::npos) {
-        ui->respondLabel->setText("Invalid username, semicolon is forbidden");
-        return;
-    }
 
     communicationHandler->logInRequest(username);
 }

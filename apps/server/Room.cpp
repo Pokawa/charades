@@ -37,7 +37,7 @@ void Room::removePlayer(Player* player) {
 
 chs::Message Room::getRoomInfo() const {
     auto joinedNames = getJoinedPLayerNames();
-    return chs::constructMessage(chs::MessageType::ROOM_INFO_RESPOND, roomNumber, joinedNames);
+    return chs::constructMessage(chs::MessageType::ROOM_INFO_RESPOND, roomNumber, gameIsActive, joinedNames);
 }
 
 chs::Message Room::getInGameInfo() const {

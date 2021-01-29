@@ -30,6 +30,7 @@ public:
     void removePlayer(const chs::Socket & socket);
     bool clientIsLoggedIn(const chs::Socket & socket);
     Player& getPlayer(const chs::Socket & socket);
+    bool isNameValid(const std::string& name);
     bool isNameAvailable(const std::string& name);
 
 private:

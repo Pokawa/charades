@@ -51,10 +51,15 @@ CharadesWindow::CharadesWindow(std::unique_ptr<CommunicationHandler> ptr, std::s
 }
 
 void CharadesWindow::roomsInfoRespond(chs::Message message) {
-    auto[roomNumber, joinedNames] = chs::deconstructMessage<int, std::string>(message);
+    auto [roomNumber, gameIsActive, joinedNames] = chs::deconstructMessage<int, bool, std::string>(message);
     std::replace(joinedNames.begin(), joinedNames.end(), ';', ' ');
-    auto itemString = fmt::format("Room {} Players: {}", roomNumber, joinedNames);
-    ui->roomsList->addItem(QString::fromStdString(itemString));
+    auto itemString = fmt::format("Room {} Players: {}", roomNumber, joinedNames).append(gameIsActive ? " (playing) " : "");
+
+    auto* item = new QListWidgetItem(QString::fromStdString(itemString), ui->roomsList);
+
+    if (gameIsActive) {
+        item->setFlags(item->flags() & ~Qt::ItemIsEnabled);
+    }
 }
 
 void CharadesWindow::on_roomsList_itemDoubleClicked(QListWidgetItem *item)

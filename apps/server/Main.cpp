@@ -58,12 +58,12 @@ int main(int argc, char** argv){
                     case chs::MessageType::LOG_IN_REQUEST: {
                         auto [name] = chs::deconstructMessage<std::string>(message);
 
-                        if (playersHandler.isNameAvailable(name)){
+                        if (playersHandler.isNameValid(name)){
                             playersHandler.addPlayer(name, client);
                             spdlog::info("Logged in player: {} on {}", name, client.getPort());
                             LogicHandler::sendSimpleRespond(client, chs::MessageType::OK_RESPOND);
                         } else {
-                            spdlog::info("Refused player: {} on {}; Name in use", name, client.getPort());
+                            spdlog::info("Refused player: {} on {}", name, client.getPort());
                             LogicHandler::sendSimpleRespond(client, chs::MessageType::ERROR_RESPOND);
                         }
                     }
