@@ -169,6 +169,7 @@ void CharadesWindow::handleInGameInfoRespond(chs::Message message) {
         ui->charadesLabel->clear();
         timer.remove(labelUpdater);
         ui->timeLabel->setText("3:00");
+        ui->drawWidget->clear();
 
         if (owner == username and numberOfPlayers >= 2) {
             ui->startButton->setEnabled(true);

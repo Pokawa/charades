@@ -16,7 +16,7 @@ void Room::addPlayer(Player* player) {
 void Room::removePlayer(Player* player) {
     player->exitRoom();
     players.erase(std::remove(players.begin(), players.end(), player), players.end());
-    drawingQueue.erase(std::remove(drawingQueue.begin(), drawingQueue.end(), player), drawingQueue.end());
+    quitDrawingQueue(player);
 
     if (player == owner and not players.empty()) {
         setOwner(players.front());
