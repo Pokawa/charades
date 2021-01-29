@@ -31,7 +31,8 @@ PlayersHandler &PlayersHandler::getInstance() {
 
 void PlayersHandler::removePlayer(const chs::Socket & socket) {
     auto position = getPlayerPosition(socket);
-    players.erase(position);
+    if (position != players.end())
+        players.erase(position);
 }
 
 std::list<Player>::iterator PlayersHandler::getPlayerPosition(const chs::Socket & socket) {
