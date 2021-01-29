@@ -21,7 +21,6 @@ void IOHandler::receiveFrom(chs::Socket &socket) {
     auto success = incomingQueues.at(socket.getDescriptor()).readMessages();
 
     if (not success) {
-        spdlog::error("error while reading from {}", socket.getPort());
         closeConnection(socket);
     }
 }

@@ -29,7 +29,11 @@
         </widget>
        </item>
        <item>
-        <widget class="QLineEdit" name="addressInput"/>
+        <widget class="QLineEdit" name="addressInput">
+         <property name="text">
+          <string>46.41.143.101</string>
+         </property>
+        </widget>
        </item>
        <item>
         <widget class="QLabel" name="portLabel">

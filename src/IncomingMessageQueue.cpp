@@ -12,6 +12,7 @@ chs::IncomingMessageQueue::IncomingMessageQueue(const chs::Socket & socket) : so
 
 bool chs::IncomingMessageQueue::readMessages() {
     if (getBufferSize() == 0) {
+        spdlog::info("Socket hanged up");
         return false;
     }
 
