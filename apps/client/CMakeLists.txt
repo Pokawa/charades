@@ -24,6 +24,6 @@ set(DRAW_WIDGET DrawWidget.cpp DrawWidget.hpp)
 add_executable(client Main.cpp CommunicationHandler.cpp CommunicationHandler.hpp MessageReceiver.cpp MessageReceiver.hpp
         ${CHARADES_WINDOW} ${CONNECT_DIALOG} ${TS_FILES} ${DRAW_WIDGET} App.cpp App.hpp)
 
-target_link_libraries(client PRIVATE Qt${QT_VERSION_MAJOR}::Widgets myLib spdlog::spdlog fmt::fmt)
+target_link_libraries(client PRIVATE Qt${QT_VERSION_MAJOR}::Widgets myLib spdlog::spdlog fmt::fmt Threads::Threads)
 
 qt5_create_translation(QM_FILES ${CMAKE_SOURCE_DIR} ${TS_FILES})

@@ -31,7 +31,9 @@ bool ConnectionHandler::acceptClient() {
 }
 
 void ConnectionHandler::openServer() {
-    addrinfo hints { .ai_flags = AI_PASSIVE, .ai_protocol = IPPROTO_TCP};
+    addrinfo hints {0};
+    hints.ai_flags = AI_PASSIVE;
+    hints.ai_protocol = IPPROTO_TCP;
     addrinfo *resolved;
 
     if (getaddrinfo(nullptr, port.c_str(), &hints, &resolved)) {
