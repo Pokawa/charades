@@ -29,8 +29,12 @@ bool chs::IncomingMessageQueue::readMessages() {
         auto bytes = recv(socket.getDescriptor(), writeOffset, remainingSize, 0);
 
         if (bytes == -1) {
-            spdlog::error("Reading from socket error: {}", strerror(errno));
-            return false;
+            if (errno == EAGAIN) {
+                return true;
+            } else {
+                spdlog::error("Reading from socket error: {}", strerror(errno));
+                return false;
+            }
         }
 
         readBytes += bytes;
