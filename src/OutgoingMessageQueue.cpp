@@ -30,15 +30,18 @@ bool chs::OutgoingMessageQueue::sendMessages() {
             auto sentBytes = send(socket.getDescriptor(),  startingAddress, remainingLength, MSG_DONTWAIT);
 
             if (sentBytes == -1) {
-                spdlog::error("Sending to socket error: {}", strerror(errno));
-                return false;
+                if (errno == EAGAIN) {
+                    blocked = true;
+                    return true;
+                } else {
+                    spdlog::error("Sending to socket error: {}", strerror(errno));
+                    return false;
+                }
             }
 
             sentOffset += sentBytes;
             if (sentOffset == currentMessage.size()) {
                 sending = false;
-            } else {
-                blocked = true;
             }
         }
     }
