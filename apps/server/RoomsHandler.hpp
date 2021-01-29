@@ -6,12 +6,12 @@
 #define CHARADES_ROOMSHANDLER_HPP
 
 
-#include <vector>
+#include <list>
 #include "Room.hpp"
 
 class RoomsHandler {
 private:
-    std::vector<Room> rooms;
+    std::list<Room> rooms;
     int latestRoomNumber;
 
     static std::unique_ptr<RoomsHandler> instance;
@@ -31,7 +31,7 @@ public:
     bool isJoinPossible(int roomNumber);
 
 private:
-    std::vector<Room>::iterator findRoomByNumber(int roomNumber);
+    std::list<Room>::iterator findRoomByNumber(int roomNumber);
 };
 
 

@@ -42,7 +42,7 @@ Room &RoomsHandler::getRoomByNumber(int roomNumber) {
     return *findRoomByNumber(roomNumber);
 }
 
-std::vector<Room>::iterator RoomsHandler::findRoomByNumber(int roomNumber) {
+std::list<Room>::iterator RoomsHandler::findRoomByNumber(int roomNumber) {
     auto isSameRoomNumber = [roomNumber](const Room& room){ return room.getRoomNumber() == roomNumber; };
     return std::find_if(rooms.begin(), rooms.end(), isSameRoomNumber);
 }
